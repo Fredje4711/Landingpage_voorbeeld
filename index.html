@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Liga Midden Limburg</title>
+    
+    <!-- Modern dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+<style>
+        :root {
+            --primary-color: #23A9E4;
+            --primary-light: #4FBFF0;
+            --primary-dark: #1B86B6;
+            --text-color: #333333;
+            --white-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            height: 100vh; /* Added */
+            overflow: hidden; /* Added */
+        }
+
+        /* Modern Banner */
+        .banner {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none"/></svg>');
+            opacity: 0.3;
+        }
+
+        .banner-content {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .banner-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Layout */
+        .wrapper {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            padding: 2rem;
+            height: calc(100vh - 300px); /* Changed from min-height */
+            overflow: hidden; /* Added */
+        }
+
+/* Modern Sidebar */
+.sidebar {
+    background: linear-gradient(160deg, var(--primary-color), var(--primary-dark));
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .wrapper {
+        grid-template-columns: 1fr;
+        height: calc(100vh - 300px - 60px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        overflow: visible; /* Prevent scrolling in sidebar */
+        flex-shrink: 0; /* Prevent sidebar from shrinking */
+    }
+
+    .content {
+        flex: 1;
+        overflow-y: auto;
+    }
+        }
+
+        .menu-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            margin: 0.5rem 0;
+        }
+
+        .menu-link {
+            display: block;
+            padding: 1rem;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .menu-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+            color: white;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow-y: auto; /* Added */
+            height: 100%; /* Added */
+        }
+
+        /* Gallery Grid */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox-content {
+            position: relative;
+            width: 90%;
+            height: 90%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox-image {
+            max-width: 90%;
+            max-height: 85vh;
+            object-fit: contain;
+        }
+
+        .lightbox-close {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            z-index: 1002;
+        }
+
+        /* Alternative position options */
+        @media (max-width: 768px) {
+            .lightbox-close {
+                top: auto;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .lightbox-nav {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            z-index: 1002;
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+
+        .lightbox-counter {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 1002;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .wrapper {
+                grid-template-columns: 1fr;
+                height: calc(100vh - 300px - 60px); /* Updated */
+            }
+
+            .banner-title {
+                font-size: 2rem;
+            }
+
+            .sidebar {
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .lightbox-image {
+                max-width: 95%;
+                max-height: 75vh;
+            }
+
+            .lightbox-close {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+                font-size: 30px;
+            }
+
+            .lightbox-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 24px;
+            }
+
+            .lightbox-prev { left: 10px; }
+            .lightbox-next { right: 10px; }
+        }
+
+        /* Page Content Styles */
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        .page-title {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+        }
+
+        /* Device Toggle Button */
+        .device-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .device-toggle:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .device-toggle i {
+            font-size: 1.2em;
+        }
+
+        /* Mobile View Simulation */
+        body.mobile-view {
+            max-width: 480px;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            min-height: 100vh;
+        }
+
+        body.mobile-view .wrapper {
+            grid-template-columns: 1fr;
+        }
+
+        body.mobile-view .sidebar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        body.mobile-view .gallery {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+
+        body.mobile-view .banner-title {
+            font-size: 2rem;
+        }
+
+        /* Device Frame */
+        .device-frame {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 520px;
+            height: 100vh;
+            border: 20px solid #333;
+            border-radius: 40px;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        body.mobile-view .device-frame {
+            display: block;
+        }
+    </style></head>
+<body>
+    <!-- Device Toggle Button -->
+    <button class="device-toggle">
+        <i class="fas fa-mobile-alt"></i>
+        <span class="toggle-text">GSM weergave</span>
+    </button>
+
+    <!-- Device Frame -->
+    <div class="device-frame"></div>
+
+    <!-- Banner -->
+    <div class="banner">
+        <div class="banner-content">
+            <h1 class="banner-title">Diabetes Liga Midden Limburg</h1>
+            <p class="lead">Samen sterk voor een betere toekomst</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="#home" class="menu-link" data-page="home">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#about" class="menu-link" data-page="about">
+                        <i class="fas fa-info-circle"></i> Over Ons
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#activities" class="menu-link" data-page="activities">
+                        <i class="fas fa-calendar-alt"></i> Activiteiten
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#photos" class="menu-link" data-page="photos">
+                        <i class="fas fa-images"></i> Foto's
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#contact" class="menu-link" data-page="contact">
+                        <i class="fas fa-envelope"></i> Contact
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Content Area -->
+        <main class="content">
+            <!-- Home Page -->
+            <div id="home" class="page-content active">
+                <h2 class="page-title">Welkom bij Diabetes Liga Midden Limburg</h2>
+                <p>Wij zijn een organisatie die zich inzet voor mensen met diabetes in Midden-Limburg. 
+Samen werken we aan bewustwording, ondersteuning en een betere kwaliteit van leven.</p>
+            </div>
+
+            <!-- About Page -->
+            <div id="about" class="page-content">
+                <h2 class="page-title">About Us</h2>
+                <p>The Diabetes League Middle Limburg is a local branch dedicated to supporting people with diabetes 
+                   and their families. We regularly organize meetings, workshops, and information sessions.</p>
+            </div>
+
+            <!-- Activities Page -->
+            <div id="activities" class="page-content">
+                <h2 class="page-title">Our Activities</h2>
+                <p>We organize various activities throughout the year:</p>
+                <ul>
+                    <li>Information sessions</li>
+                    <li>Workshops</li>
+                    <li>Physical activities</li>
+                    <li>Social gatherings</li>
+                </ul>
+            </div>
+
+            <!-- Photos Page -->
+            <div id="photos" class="page-content">
+                <h2 class="page-title">Photo Gallery</h2>
+                <div class="gallery" id="gallery"></div>
+            </div>
+
+            <!-- Contact Page -->
+            <div id="contact" class="page-content">
+                <h2 class="page-title">Contact</h2>
+                <p>Get in touch with us:</p>
+                <p>Email: info@diabetesleague-middenlimburg.be</p>
+                <p>Phone: +32 123 45 67 89</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox">
+        <div class="lightbox-content">
+            <img src="" alt="" class="lightbox-image">
+        </div>
+        <div class="lightbox-close">&times;</div>
+        <div class="lightbox-nav lightbox-prev">&#10094;</div>
+        <div class="lightbox-nav lightbox-next">&#10095;</div>
+        <div class="lightbox-counter">1 / 12</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Image Gallery Setup
+            const images = [
+                'https://picsum.photos/800/600?random=1',
+                'https://picsum.photos/800/600?random=2',
+                'https://picsum.photos/800/600?random=3',
+                'https://picsum.photos/800/600?random=4',
+                'https://picsum.photos/800/600?random=5',
+                'https://picsum.photos/800/600?random=6',
+                'https://picsum.photos/800/600?random=7',
+                'https://picsum.photos/800/600?random=8',
+                'https://picsum.photos/800/600?random=9',
+                'https://picsum.photos/800/600?random=10',
+                'https://picsum.photos/800/600?random=11',
+                'https://picsum.photos/800/600?random=12'
+            ];
+
+            // Create gallery items
+            const gallery = document.getElementById('gallery');
+            images.forEach((image, index) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.innerHTML = `<img src="${image}" alt="Gallery image ${index + 1}">`;
+                item.dataset.index = index;
+                gallery.appendChild(item);
+            });
+
+            // Lightbox functionality
+            const lightbox = document.querySelector('.lightbox');
+            const lightboxImage = lightbox.querySelector('.lightbox-image');
+            const close = lightbox.querySelector('.lightbox-close');
+            const prev = lightbox.querySelector('.lightbox-prev');
+            const next = lightbox.querySelector('.lightbox-next');
+            const counter = lightbox.querySelector('.lightbox-counter');
+            let currentIndex = 0;
+
+            function showImage(index) {
+                currentIndex = index;
+                lightboxImage.src = images[index];
+                counter.textContent = `${index + 1} / ${images.length}`;
+            }
+
+            // Gallery and lightbox events
+            gallery.addEventListener('click', (e) => {
+                const item = e.target.closest('.gallery-item');
+                if (item) {
+                    currentIndex = parseInt(item.dataset.index);
+                    showImage(currentIndex);
+                    lightbox.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+
+            // Close lightbox
+            close.addEventListener('click', () => {
+                lightbox.style.display = 'none';
+                document.body.style.overflow = '';
+            });
+
+            // Close lightbox when clicking outside
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    lightbox.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Navigate images
+            next.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentIndex = (currentIndex + 1) % images.length;
+                showImage(currentIndex);
+            });
+
+            prev.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentIndex = (currentIndex - 1 + images.length) % images.length;
+                showImage(currentIndex);
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (lightbox.style.display === 'flex') {
+                    if (e.key === 'Escape') {
+                        lightbox.style.display = 'none';
+                        document.body.style.overflow = '';
+                    }
+                    if (e.key === 'ArrowRight') next.click();
+                    if (e.key === 'ArrowLeft') prev.click();
+                }
+            });
+
+            // Navigation between pages
+            const menuLinks = document.querySelectorAll('.menu-link');
+            const pages = document.querySelectorAll('.page-content');
+
+            menuLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = link.getAttribute('data-page');
+                    
+                    // Hide all pages
+                    pages.forEach(page => {
+                        page.classList.remove('active');
+                    });
+
+                    // Show selected page
+                    document.getElementById(pageId).classList.add('active');
+                });
+            });
+
+            // Device view toggle functionality
+            const deviceToggle = document.querySelector('.device-toggle');
+            const toggleText = deviceToggle.querySelector('.toggle-text');
+            const toggleIcon = deviceToggle.querySelector('i');
+
+            deviceToggle.addEventListener('click', () => {
+                document.body.classList.toggle('mobile-view');
+                
+                if (document.body.classList.contains('mobile-view')) {
+                    toggleText.textContent = 'Desktop View';
+                    toggleIcon.classList.remove('fa-mobile-alt');
+                    toggleIcon.classList.add('fa-desktop');
+                } else {
+                    toggleText.textContent = 'Mobile View';
+                    toggleIcon.classList.remove('fa-desktop');
+                    toggleIcon.classList.add('fa-mobile-alt');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

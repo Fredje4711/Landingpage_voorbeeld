@@ -30,20 +30,9 @@ body {
 /* Modern Banner */
 .banner {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-    height: 200px;
+    height: 200px; /* Increase this value if needed */
     position: relative;
     overflow: hidden;
-}
-
-.banner::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none"/></svg>');
-    opacity: 0.3;
 }
 
 .banner-content {
@@ -55,7 +44,7 @@ body {
     align-items: center;
     color: white;
     text-align: center;
-    padding: 2rem;
+    padding: 3rem 2rem; /* Increased top/bottom padding from 2rem to 3rem */
 }
 
 .banner-title {
@@ -63,6 +52,7 @@ body {
     font-weight: 700;
     margin-bottom: 1rem;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    margin-top: 1rem; /* Added margin-top */
 }
 
 /* Layout */

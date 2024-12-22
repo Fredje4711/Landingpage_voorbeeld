@@ -10,70 +10,70 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
 <style>
-        :root {
-            --primary-color: #23A9E4;
-            --primary-light: #4FBFF0;
-            --primary-dark: #1B86B6;
-            --text-color: #333333;
-            --white-color: #ffffff;
-        }
+:root {
+    --primary-color: #23A9E4;
+    --primary-light: #4FBFF0;
+    --primary-dark: #1B86B6;
+    --text-color: #333333;
+    --white-color: #ffffff;
+}
 
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f9fa;
-            height: 100vh; /* Added */
-            overflow: hidden; /* Added */
-        }
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    overflow-y: auto; /* Changed from hidden */
+}
 
-        /* Modern Banner */
-        .banner {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            height: 200px;
-            position: relative;
-            overflow: hidden;
-        }
+/* Modern Banner */
+.banner {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+}
 
-        .banner::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none"/></svg>');
-            opacity: 0.3;
-        }
+.banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none"/></svg>');
+    opacity: 0.3;
+}
 
-        .banner-content {
-            position: relative;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            text-align: center;
-            padding: 2rem;
-        }
+.banner-content {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+    padding: 2rem;
+}
 
-        .banner-title {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
+.banner-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
 
-        /* Layout */
-        .wrapper {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 2rem;
-            padding: 2rem;
-            height: calc(100vh - 300px); /* Changed from min-height */
-            overflow: hidden; /* Added */
-        }
+/* Layout */
+.wrapper {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    padding: 2rem;
+    min-height: calc(100vh - 200px); /* Changed from height to min-height */
+    overflow-y: auto; /* Changed from hidden */
+}
 
 /* Modern Sidebar */
 .sidebar {
@@ -81,325 +81,395 @@
     padding: 2rem;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+}
+
+.menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    margin: 0.5rem 0;
+}
+
+.menu-link {
+    display: block;
+    padding: 1rem;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: rgba(255,255,255,0.1);
+}
+
+.menu-link:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateX(5px);
+    color: white;
+}
+
+/* Content Area */
+.content {
+    padding: 2rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    overflow-y: auto;
+    height: auto; /* Changed from 100% */
+    min-height: 50vh;
+}
+
+/* Gallery Grid */
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+/* Lightbox */
+.lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.95);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.lightbox-content {
+    position: relative;
+    width: 90%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.lightbox-image {
+    max-width: 90%;
+    max-height: 85vh;
+    object-fit: contain;
+}
+
+.lightbox-close {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    color: white;
+    font-size: 40px;
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    z-index: 1002;
+}
+
+.lightbox-close:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.1);
+}
+
+.lightbox-nav {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    z-index: 1002;
+}
+
+.lightbox-nav:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.lightbox-prev { left: 20px; }
+.lightbox-next { right: 20px; }
+
+.lightbox-counter {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    background: rgba(255,255,255,0.2);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    z-index: 1002;
+}
+
+/* Page Content Styles */
+.page-content {
+    display: none;
+}
+
+.page-content.active {
+    display: block;
+}
+
+.page-title {
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+}
+
+/* Device Toggle Button */
+.device-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1001;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.device-toggle:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.device-toggle i {
+    font-size: 1.2em;
+}
+
+/* Mobile View Simulation */
+body.mobile-view {
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
+body.mobile-view .wrapper {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 0;
+    padding: 1rem;
+}
+
+body.mobile-view .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    margin-bottom: 1rem;
+}
+
+body.mobile-view .gallery {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+body.mobile-view .banner-title {
+    font-size: 2rem;
+}
+
+/* Device Frame */
+.device-frame {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 520px;
+    height: 100vh;
+    border: 20px solid #333;
+    border-radius: 40px;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+body.mobile-view .device-frame {
+    display: block;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .wrapper {
         grid-template-columns: 1fr;
-        height: calc(100vh - 300px - 60px);
-        display: flex;
-        flex-direction: column;
+        height: auto;
+        min-height: 0;
+        overflow-y: visible;
+        padding: 1rem;
+    }
+
+    .banner-title {
+        font-size: 2rem;
     }
 
     .sidebar {
         position: sticky;
         top: 0;
         z-index: 100;
-        overflow: visible; /* Prevent scrolling in sidebar */
-        flex-shrink: 0; /* Prevent sidebar from shrinking */
+        margin-bottom: 1rem;
     }
 
     .content {
-        flex: 1;
-        overflow-y: auto;
+        height: auto;
+        min-height: 50vh;
+        overflow-y: visible;
+        padding: 1rem;
     }
-        }
 
-        .menu-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+    .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
 
-        .menu-item {
-            margin: 0.5rem 0;
-        }
+    .lightbox-image {
+        max-width: 95%;
+        max-height: 75vh;
+    }
 
-        .menu-link {
-            display: block;
-            padding: 1rem;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            background: rgba(255,255,255,0.1);
-        }
+    .lightbox-close {
+        top: auto;
+        bottom: 20px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 30px;
+    }
 
-        .menu-link:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateX(5px);
-            color: white;
-        }
+    .lightbox-nav {
+        width: 40px;
+        height: 40px;
+        font-size: 24px;
+    }
 
-        /* Content Area */
-        .content {
-            padding: 2rem;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            overflow-y: auto; /* Added */
-            height: 100%; /* Added */
-        }
+    .lightbox-prev { left: 10px; }
+    .lightbox-next { right: 10px; }
 
-        /* Gallery Grid */
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
+    .device-toggle {
+        top: 10px;
+        right: 10px;
+        padding: 8px 12px;
+    }
+}
 
-        .gallery-item {
-            position: relative;
-            overflow: hidden;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
+/* Additional Mobile Optimizations */
+@media (max-width: 480px) {
+    .banner {
+        height: 150px;
+    }
 
-        .gallery-item:hover {
-            transform: translateY(-5px);
-        }
+    .banner-title {
+        font-size: 1.5rem;
+    }
 
-        .gallery-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
+    .content {
+        padding: 1rem;
+    }
 
-        /* Lightbox */
-        .lightbox {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
+    .menu-link {
+        padding: 0.75rem;
+    }
 
-        .lightbox-content {
-            position: relative;
-            width: 90%;
-            height: 90%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 1rem;
+    }
 
-        .lightbox-image {
-            max-width: 90%;
-            max-height: 85vh;
-            object-fit: contain;
-        }
+    .gallery-item img {
+        height: 150px;
+    }
 
-        .lightbox-close {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            color: white;
-            font-size: 40px;
-            cursor: pointer;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            z-index: 1002;
-        }
+    .device-frame {
+        display: none !important;
+    }
+}
 
-        /* Alternative position options */
-        @media (max-width: 768px) {
-            .lightbox-close {
-                top: auto;
-                bottom: 20px;
-                right: 20px;
-            }
-        }
+/* Touch Device Optimizations */
+@media (hover: none) {
+    .menu-link:hover {
+        transform: none;
+    }
 
-        .lightbox-close:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.1);
-        }
+    .gallery-item:hover {
+        transform: none;
+    }
 
-        .lightbox-nav {
-            position: fixed;
-            top: 50%;
-            transform: translateY(-50%);
-            color: white;
-            font-size: 30px;
-            cursor: pointer;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            z-index: 1002;
-        }
+    .menu-link:active {
+        background: rgba(255,255,255,0.3);
+    }
 
-        .lightbox-nav:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-50%) scale(1.1);
-        }
+    .gallery-item:active {
+        opacity: 0.8;
+    }
+}
 
-        .lightbox-prev { left: 20px; }
-        .lightbox-next { right: 20px; }
+/* Print Styles */
+@media print {
+    .device-toggle,
+    .device-frame,
+    .lightbox,
+    .sidebar {
+        display: none !important;
+    }
 
-        .lightbox-counter {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            background: rgba(255,255,255,0.2);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            z-index: 1002;
-        }
+    .wrapper {
+        display: block;
+        padding: 0;
+    }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .wrapper {
-                grid-template-columns: 1fr;
-                height: calc(100vh - 300px - 60px); /* Updated */
-            }
+    .content {
+        box-shadow: none;
+        padding: 0;
+    }
 
-            .banner-title {
-                font-size: 2rem;
-            }
-
-            .sidebar {
-                position: sticky;
-                top: 0;
-                z-index: 100;
-            }
-
-            .gallery {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            }
-
-            .lightbox-image {
-                max-width: 95%;
-                max-height: 75vh;
-            }
-
-            .lightbox-close {
-                top: 10px;
-                right: 10px;
-                width: 40px;
-                height: 40px;
-                font-size: 30px;
-            }
-
-            .lightbox-nav {
-                width: 40px;
-                height: 40px;
-                font-size: 24px;
-            }
-
-            .lightbox-prev { left: 10px; }
-            .lightbox-next { right: 10px; }
-        }
-
-        /* Page Content Styles */
-        .page-content {
-            display: none;
-        }
-
-        .page-content.active {
-            display: block;
-        }
-
-        .page-title {
-            color: var(--primary-color);
-            margin-bottom: 2rem;
-        }
-
-        /* Device Toggle Button */
-        .device-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1001;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .device-toggle:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .device-toggle i {
-            font-size: 1.2em;
-        }
-
-        /* Mobile View Simulation */
-        body.mobile-view {
-            max-width: 480px;
-            margin: 0 auto;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.2);
-            min-height: 100vh;
-        }
-
-        body.mobile-view .wrapper {
-            grid-template-columns: 1fr;
-        }
-
-        body.mobile-view .sidebar {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        body.mobile-view .gallery {
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        }
-
-        body.mobile-view .banner-title {
-            font-size: 2rem;
-        }
-
-        /* Device Frame */
-        .device-frame {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 520px;
-            height: 100vh;
-            border: 20px solid #333;
-            border-radius: 40px;
-            pointer-events: none;
-            z-index: 9999;
-        }
-
-        body.mobile-view .device-frame {
-            display: block;
-        }
+    .page-content {
+        display: block !important;
+        margin-bottom: 2rem;
+        page-break-inside: avoid;
+    }
     </style></head>
 <body>
     <!-- Device Toggle Button -->

@@ -13,90 +13,170 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <style>
-/* CSS ZONDER device toggle & mobile-view simulatie, MET Q&A scroll fix */
-:root { --primary-color: #23A9E4; --primary-light: #4FBFF0; --primary-dark: #1B86B6; --text-color: #333333; --white-color: #ffffff; }
-body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; min-height: 100vh; overflow-y: auto; }
-.banner { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); height: 200px; position: relative; overflow: hidden; }
-.banner-content { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 3rem 2rem; }
-.banner-title { font-size: 3.5rem; font-weight: 700; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); margin-top: 1rem; }
-.banner .lead { font-size: 1.1rem; }
-.wrapper { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; padding: 2rem; min-height: calc(100vh - 200px); overflow-y: auto; }
-.sidebar { background: linear-gradient(160deg, var(--primary-color), var(--primary-dark)); padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 2rem; height: fit-content; }
+:root {
+    --primary-color: #23A9E4;
+    --primary-light: #4FBFF0;
+    --primary-dark: #1B86B6;
+    --text-color: #333333;
+    --white-color: #ffffff;
+    /* Definieer hoogtes/breedtes voor BEIDE weergaves */
+    --banner-height-desktop: 200px;
+    --banner-height-mobile: 120px; /* Kleinere banner voor mobiel */
+    --sidebar-width-desktop: 300px;
+    --sidebar-width-mobile: 0px; /* Start verborgen op mobiel */
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    overflow: hidden; /* Voorkom scrollen van body zelf */
+    /* min-height: 100vh; /* Niet nodig als content scrollt */
+}
+
+/* --- VASTE BANNER --- */
+.banner {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    height: var(--banner-height-desktop); /* Start met desktop hoogte */
+    position: fixed; /* VAST */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    overflow: hidden;
+    transition: height 0.3s ease-in-out; /* Transitie voor hoogte */
+}
+.banner-content { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 1rem; } /* Minder padding */
+.banner-title { font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); margin-top: 0.5rem; transition: font-size 0.3s ease-in-out; }
+.banner .lead { font-size: 1.1rem; transition: font-size 0.3s ease-in-out;}
+
+
+/* --- VASTE SIDEBAR --- */
+.sidebar {
+    background: linear-gradient(160deg, var(--primary-color), var(--primary-dark));
+    padding: 1.5rem;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+    position: fixed; /* VAST */
+    top: var(--banner-height-desktop); /* Start onder desktop banner */
+    left: 0;
+    width: var(--sidebar-width-desktop); /* Start met desktop breedte */
+    height: calc(100vh - var(--banner-height-desktop)); /* Start met desktop hoogte */
+    overflow-y: auto;
+    z-index: 99;
+    box-sizing: border-box;
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out, top 0.3s ease-in-out, height 0.3s ease-in-out; /* Animaties */
+    transform: translateX(0); /* Start zichtbaar */
+}
 .menu-list { list-style: none; padding: 0; margin: 0; }
 .menu-item { margin: 0.5rem 0; }
-.menu-link { display: flex; align-items: center; gap: 0.8rem; padding: 1rem; color: white; text-decoration: none; border-radius: 8px; transition: all 0.3s ease; background: rgba(255,255,255,0.1); }
+.menu-link { display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1rem; color: white; text-decoration: none; border-radius: 8px; transition: background-color 0.3s ease; background: rgba(255,255,255,0.1); }
 .menu-link i { width: 20px; text-align: center; }
-.menu-link:hover { background: rgba(255,255,255,0.2); transform: translateX(5px); color: white; }
+.menu-link:hover { background: rgba(255,255,255,0.2); color: white; }
 .menu-link.active-link { font-weight: bold; background: rgba(255,255,255,0.25); }
-.content { padding: 2rem; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow-y: auto; min-height: 50vh; }
-.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
-.gallery-item { position: relative; overflow: hidden; border-radius: 10px; cursor: pointer; transition: transform 0.3s ease; }
-.gallery-item:hover { transform: translateY(-5px); }
-.gallery-item img { width: 100%; height: 200px; object-fit: cover; display: block; transition: transform 0.3s ease; }
-.lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; }
-.lightbox-content { position: relative; width: 90%; height: 90%; display: flex; justify-content: center; align-items: center; }
-.lightbox-image { max-width: 90%; max-height: 85vh; object-fit: contain; }
-.lightbox-close { position: fixed; top: 80px; right: 20px; color: white; font-size: 40px; cursor: pointer; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); border-radius: 50%; transition: all 0.3s ease; z-index: 1002; line-height: 1; }
-.lightbox-close:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
-.lightbox-nav { position: fixed; top: 50%; transform: translateY(-50%); color: white; font-size: 30px; cursor: pointer; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); border-radius: 50%; transition: all 0.3s ease; z-index: 1002; }
-.lightbox-nav:hover { background: rgba(255,255,255,0.3); transform: translateY(-50%) scale(1.1); }
-.lightbox-prev { left: 20px; } .lightbox-next { right: 20px; }
-.lightbox-counter { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); color: white; background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; font-size: 14px; z-index: 1002; }
-.page-content { display: none; }
+
+
+/* --- SCROLLENDE CONTENT AREA --- */
+.content {
+    margin-top: var(--banner-height-desktop); /* Start met desktop marge */
+    margin-left: var(--sidebar-width-desktop); /* Start met desktop marge */
+    padding: 2rem;
+    background: #f8f9fa;
+    height: calc(100vh - var(--banner-height-desktop)); /* Start met desktop hoogte */
+    overflow-y: auto; /* Scrollbar hier */
+    box-sizing: border-box;
+    transition: margin-left 0.3s ease-in-out, margin-top 0.3s ease-in-out, height 0.3s ease-in-out; /* Animaties */
+}
+
+/* Page Content Styles */
+.page-content { display: none; background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 2rem; }
+.content .page-content:last-child { margin-bottom: 0; }
 .page-content.active { display: block; animation: fadeIn 0.5s ease-in-out; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.page-title { color: var(--primary-color); margin-bottom: 2rem; margin-top: 0; padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary-light);}
-.iframe-container { display: flex; justify-content: flex-start; }
-/* Algemene Iframe Container Stijl */
+.page-title { color: var(--primary-color); margin-bottom: 1.5rem; margin-top: 0; padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary-light); }
+
+/* Iframe containers */
 .iframe-page-container { width: 100%; aspect-ratio: 16 / 11; overflow: hidden; border: 1px solid #eee; margin-bottom: 10px; position: relative; }
 .iframe-page-container iframe { width: 100%; height: 100%; border: none; display: block; }
-/* Specifieke stijl voor Q&A Container */
-.qa-page .iframe-page-container {
-    width: 100%;
-    height: 100vh; /* Vaste hoogte (viewport hoogte) */
-    overflow-y: auto; /* Scrollbar op DEZE container indien nodig */
-    border: 1px solid #eee;
-    margin-bottom: 10px;
-    aspect-ratio: unset; /* Verwijder aspect-ratio */
-}
-/* Iframe BINNEN Q&A container vult deze container */
-.qa-page .iframe-page-container iframe {
-    width: 100%;
-    height: 100%; /* Vult de container */
-    border: none;
-    display: block;
-}
+/* Specifiek voor Q&A */
+.qa-page .iframe-page-container { width: 100%; height: 100vh; overflow-y: auto; border: 1px solid #eee; margin-bottom: 10px; aspect-ratio: unset; }
+.qa-page .iframe-page-container iframe { width: 100%; height: 100%; border: none; display: block; }
+/* JotForm */
 .jotform-iframe-wrapper { text-align: center; }
 .jotform-iframe-container { display: inline-block; max-width: 100%; }
 .jotform-iframe-container iframe { height: 600px; width: 375px; max-width: 100%; border: 5pt solid var(--primary-color); display: block; margin: auto; }
 
-/* GEEN .device-toggle stijl meer */
-/* GEEN body.mobile-view stijlen meer */
+/* Gallery */
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.gallery-item { position: relative; overflow: hidden; border-radius: 10px; cursor: pointer; transition: transform 0.3s ease; }
+.gallery-item:hover { transform: translateY(-5px); }
+.gallery-item img { width: 100%; height: 150px; object-fit: cover; display: block; transition: transform 0.3s ease; }
 
-/* Responsive Design (Behoud basis layout aanpassingen) */
-@media (max-width: 768px) {
-    .wrapper { grid-template-columns: 1fr; height: auto; min-height: 0; overflow-y: visible; padding: 1rem; }
-    .banner-title { font-size: 2rem; }
-    .sidebar { position: sticky; top: 0; z-index: 100; margin-bottom: 1rem; }
-    .content { height: auto; min-height: 50vh; overflow-y: visible; padding: 1rem; }
-    .gallery { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-    .lightbox-image { max-width: 95%; max-height: 75vh; }
-    .lightbox-close { top: auto; bottom: 20px; right: 10px; width: 40px; height: 40px; font-size: 30px; }
-    .lightbox-nav { width: 40px; height: 40px; font-size: 24px; }
+/* Lightbox */
+.lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; }
+.lightbox-content { /* ... */ } .lightbox-image { /* ... */ }
+.lightbox-close { position: fixed; top: 20px; right: 20px; z-index: 1002; /* ... rest ... */ } /* Top niet meer afhankelijk van banner */
+.lightbox-nav { /* ... */ } .lightbox-prev { /* ... */ } .lightbox-next { /* ... */ } .lightbox-counter { /* ... */ }
+
+/* GEEN .device-toggle stijl meer */
+
+/* --- RESPONSIVE AANPASSINGEN voor VASTE LAYOUT --- */
+@media (max-width: 992px) { /* Tablet en kleiner: Sidebar verdwijnt */
+    :root {
+        --sidebar-width-mobile: 0px; /* Effectief geen breedte */
+    }
+    .sidebar {
+        width: var(--sidebar-width-mobile); /* Breedte naar 0 */
+        transform: translateX(-100%); /* Schuif volledig uit beeld */
+        padding-left: 0; /* Geen padding als verborgen */
+        padding-right: 0;
+        border-radius: 0;
+        box-shadow: none;
+        /* TODO: Hamburger menu knop/logica nodig om te togglen (bv. transform: translateX(0);) */
+    }
+    .content {
+        margin-left: var(--sidebar-width-mobile); /* Margin naar 0 */
+        padding: 1.5rem;
+    }
+     .banner-title { font-size: 2.5rem; }
 }
-@media (max-width: 480px) {
-    .banner { height: 150px; }
-    .banner-title { font-size: 1.5rem; }
-    .content { padding: 1rem; }
-    .menu-link { padding: 0.75rem; }
-    .gallery { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 1rem; }
-    .gallery-item img { height: 150px; }
+
+@media (max-width: 768px) { /* Kleinere tablet/grote telefoon */
+    :root {
+        --banner-height-mobile: 150px;
+         --banner-height-desktop: 150px; /* Pas desktop var aan voor transitie */
+    }
+    .banner { height: var(--banner-height-mobile); } /* Gebruik mobiele hoogte */
+     .banner-title { font-size: 2rem; }
+     .sidebar { top: var(--banner-height-mobile); height: calc(100vh - var(--banner-height-mobile)); } /* Update positie/hoogte */
+     .content { margin-top: var(--banner-height-mobile); height: calc(100vh - var(--banner-height-mobile)); padding: 1rem;}
+     .gallery { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+     .lightbox-close { top: 15px; right: 15px; width: 40px; height: 40px; font-size: 30px; }
+     .lightbox-nav { width: 40px; height: 40px; font-size: 24px; }
 }
+
+@media (max-width: 480px) { /* Kleine telefoon */
+     :root {
+         --banner-height-mobile: 120px;
+          --banner-height-desktop: 120px; /* Pas desktop var aan voor transitie */
+     }
+     .banner { height: var(--banner-height-mobile); }
+     .banner-title { font-size: 1.8rem; }
+     .sidebar { top: var(--banner-height-mobile); height: calc(100vh - var(--banner-height-mobile)); }
+     .content { margin-top: var(--banner-height-mobile); height: calc(100vh - var(--banner-height-mobile)); padding: 0.8rem;}
+     .gallery { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
+     .gallery-item img { height: 140px; }
+     .lightbox-close { top: 10px; right: 10px; }
+}
+
 /* Touch Device Optimizations */
-@media (hover: none) { /* ... (blijft hetzelfde) ... */ }
+@media (hover: none) { /* ... */ }
+
 /* Print Styles */
-@media print { /* ... (blijft hetzelfde) ... */ }
+@media print { /* ... */ }
+
 </style>
+
 </head>
 <body>
     <!-- GEEN Device Toggle Button hier -->

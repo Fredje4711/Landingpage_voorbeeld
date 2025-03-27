@@ -6,21 +6,21 @@
     <!-- Einde Tidio Live Chat Code -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diabetes Liga Midden Limburg</title>
+    <title>Diabetes Liga Midden Limburg - Tools</title> <!-- Titel aangepast -->
 
     <!-- Modern dependencies -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <style>
-/* CSS ZONDER device toggle, ZONDER lightbox, MET aangepaste iframe hoogtes */
+/* Definitieve CSS zonder toggle/lightbox */
 :root { --primary-color: #23A9E4; --primary-light: #4FBFF0; --primary-dark: #1B86B6; --text-color: #333333; --white-color: #ffffff; }
 body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; min-height: 100vh; overflow-y: auto; }
 .banner { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); height: 200px; position: relative; overflow: hidden; }
 .banner-content { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 3rem 2rem; }
-.banner-title { font-size: 3.5rem; font-weight: 700; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); margin-top: 1rem; }
-.banner .lead { font-size: 1.1rem; }
-.wrapper { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; padding: 2rem; min-height: calc(100vh - 200px); overflow-y: auto; }
+.banner-title { font-size: 3.5rem; font-weight: 700; margin-bottom: 0.25rem; /* Kleinere marge onder titel */ text-shadow: 2px 2px 4px rgba(0,0,0,0.2); margin-top: 1rem; }
+.banner .lead { font-size: 1.1rem; margin-top: 0; /* Geen extra marge boven lead */ }
+.wrapper { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; padding: 2rem; min-height: calc(100vh - 200px); /* Aangepast voor banner */ }
 .sidebar { background: linear-gradient(160deg, var(--primary-color), var(--primary-dark)); padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 2rem; height: fit-content; }
 .menu-list { list-style: none; padding: 0; margin: 0; }
 .menu-item { margin: 0.5rem 0; }
@@ -28,104 +28,126 @@ body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; 
 .menu-link i { width: 20px; text-align: center; }
 .menu-link:hover { background: rgba(255,255,255,0.2); transform: translateX(5px); color: white; }
 .menu-link.active-link { font-weight: bold; background: rgba(255,255,255,0.25); }
-.content { padding: 2rem; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow-y: auto; min-height: 50vh; }
-.page-content { display: none; }
+.content { padding: 0; background: transparent; border-radius: 0; box-shadow: none; overflow-y: visible; min-height: auto; }
+.page-content { display: none; background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+.page-content:last-child { margin-bottom: 0; }
 .page-content.active { display: block; animation: fadeIn 0.5s ease-in-out; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.page-title { color: var(--primary-color); margin-bottom: 2rem; margin-top: 0; padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary-light);}
-.iframe-container { display: flex; justify-content: flex-start; }
-/* Algemene Iframe Container (basis structuur) */
-.iframe-page-container {
-    width: 100%;
-    /* GEEN aspect-ratio of vaste height hier */
-    overflow: visible; /* Sta interne groei toe */
-    border: 1px solid #eee; /* Optionele rand */
-    margin-bottom: 10px;
-    position: relative; /* Blijft nuttig */
-}
-/* Iframe zelf (basis) */
-.iframe-page-container iframe {
-    width: 100%;
-    border: none;
-    display: block; /* Voorkomt extra ruimte onder iframe */
-    height: 65vh; /* Redelijke standaard hoogte */
-}
-/* Specifieke hoogte voor lange iframes */
-.qa-page .iframe-page-container iframe,
-.quiz-page .iframe-page-container iframe,
-.calculator-page .iframe-page-container iframe,
-.qrcode-page .iframe-page-container iframe {
-    min-height: 85vh; /* Geef ze minstens 85% van viewport hoogte */
-    height: auto; /* Laat hoogte groeien? -> Kan problemen geven, probeer eerst zonder */
-    /* Alternatief: vaste grote hoogte */
-    /* height: 1500px; */
-}
-/* JotForm blijft apart */
+.page-title { color: var(--primary-color); margin-bottom: 1.5rem; margin-top: 0; padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary-light);}
+.iframe-page-container { width: 100%; aspect-ratio: 16 / 11; overflow: hidden; border: 1px solid #eee; margin-bottom: 10px; position: relative; }
+.iframe-page-container iframe { width: 100%; height: 100%; border: none; display: block; }
+.qa-page .iframe-page-container { width: 100%; height: 100vh; overflow-y: auto; border: 1px solid #eee; margin-bottom: 10px; aspect-ratio: unset; }
+.qa-page .iframe-page-container iframe { width: 100%; height: 100%; border: none; display: block; }
 .jotform-iframe-wrapper { text-align: center; }
 .jotform-iframe-container { display: inline-block; max-width: 100%; }
 .jotform-iframe-container iframe { height: 600px; width: 375px; max-width: 100%; border: 5pt solid var(--primary-color); display: block; margin: auto; }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .wrapper { grid-template-columns: 1fr; height: auto; min-height: 0; overflow-y: visible; padding: 1rem; }
-    .banner-title { font-size: 2rem; }
-    .sidebar { position: static; width: auto; margin-bottom: 1rem; top: auto; height: auto; } /* Niet meer sticky */
-    .content { height: auto; min-height: 50vh; overflow-y: visible; padding: 1rem; }
-    body { overflow-y: auto; } /* Body scrollt op mobiel */
+@media (max-width: 992px) { /* Tablet */
+    .wrapper { grid-template-columns: 1fr; padding: 1.5rem; gap: 1.5rem; }
+    .sidebar { position: static; width: auto; margin-bottom: 1.5rem; top: auto; height: auto; }
+    .banner-title { font-size: 2.8rem; }
+     .page-content { padding: 1.5rem; }
 }
-@media (max-width: 480px) {
+@media (max-width: 768px) { /* Grote telefoon */
+    .banner { height: 180px; }
+    .banner-title { font-size: 2.2rem; }
+    .wrapper { padding: 1rem; gap: 1rem; }
+    .sidebar, .page-content { padding: 1.2rem; border-radius: 10px;}
+}
+@media (max-width: 480px) { /* Kleine telefoon */
     .banner { height: 150px; }
-    .banner-title { font-size: 1.5rem; }
-    .content { padding: 1rem; }
-    .menu-link { padding: 0.75rem; }
+    .banner-title { font-size: 1.8rem; }
+    .wrapper { padding: 0.8rem; gap: 0.8rem; }
+    .sidebar, .page-content { padding: 1rem; border-radius: 8px;}
+    .menu-link { padding: 0.8rem; gap: 0.6rem;}
+    .page-title { margin-bottom: 1rem; }
 }
-/* Touch Device Optimizations */
-@media (hover: none) { /* ... (blijft hetzelfde) ... */ }
-/* Print Styles */
-@media print { /* ... (blijft hetzelfde) ... */ }
+@media (hover: none) { /* Touch */
+    .menu-link:hover { transform: none; background: rgba(255,255,255,0.1); }
+    .menu-link:active { background: rgba(255,255,255,0.3); }
+}
+@media print { /* Print */
+     body { overflow-y: visible; }
+     .sidebar, .banner, footer { display: none !important; }
+     .wrapper { display: block; padding: 1in; }
+     .content { box-shadow: none; padding: 0; border-radius: 0; }
+     .page-content { display: block !important; margin-bottom: 2rem; page-break-inside: avoid; animation: none; box-shadow: none; border-radius: 0; padding: 0; background: white;}
+     .page-title { color: black; border-bottom: 1px solid #ccc; }
+     .iframe-page-container, .jotform-iframe-wrapper { display: none; }
+     a { text-decoration: none; color: black; }
+     a[href^="http"]:after { content: " (" attr(href) ")"; font-size: 0.8em; }
+}
 </style>
 </head>
 <body>
-    <!-- GEEN Device Toggle Button -->
-
-    <!-- Banner -->
-    <div class="banner"> <div class="banner-content"> <h1 class="banner-title">Diabetes Liga Midden Limburg</h1> <p class="lead">Samen sterk voor een betere toekomst</p> </div> </div>
+    <!-- Banner (AANGEPAST) -->
+    <div class="banner">
+        <div class="banner-content">
+            <h1 class="banner-title">Diabetes Liga Midden-Limburg</h1> <!-- Koppelteken toegevoegd -->
+            <p class="lead">Antwoorden Vinden, Kennis Testen, KH Berekenen & Meer</p> <!-- Nieuwe tekst -->
+        </div>
+    </div>
 
     <!-- Main Content -->
     <div class="wrapper">
-        <!-- Sidebar (AANGEPAST) -->
+        <!-- Sidebar (AANGEPAST - Home verwijderd) -->
         <nav class="sidebar">
              <ul class="menu-list">
-                 <li class="menu-item"> <a href="#home" class="menu-link" data-page="home"><i class="fas fa-home"></i> Home</a> </li>
+                 <!-- Home is verwijderd -->
                  <li class="menu-item"> <a href="#qa" class="menu-link" data-page="qa"><i class="fas fa-question-circle"></i> Diabetes Q&A</a> </li>
                  <li class="menu-item"> <a href="#quiz" class="menu-link" data-page="quiz"><i class="fas fa-graduation-cap"></i> Diabetes Quiz</a> </li>
                  <li class="menu-item"> <a href="#contact" class="menu-link" data-page="contact"><i class="fas fa-mobile-alt"></i> DLML App</a> </li>
                  <li class="menu-item"> <a href="#calculator" class="menu-link" data-page="calculator"><i class="fas fa-calculator"></i> Koolhydraten Calculator</a> </li>
                  <li class="menu-item"> <a href="#qrcode" class="menu-link" data-page="qrcode"><i class="fas fa-qrcode"></i> QR-Code generator</a> </li>
-                 <!-- Foto's verwijderd -->
+                 <!-- Foto's was al verwijderd -->
             </ul>
         </nav>
 
-        <!-- Content Area (ALLE IFRAMES GEVULD) -->
+        <!-- Content Area (ALLEEN IFRAMES/APP + Aangepaste IDs/Classes) -->
         <main class="content">
-            <!-- Home Page -->
-            <div id="home" class="page-content active"> <h2 class="page-title">Welkom bij Diabetes Liga Midden Limburg</h2> <p>Wij zijn een organisatie die zich inzet voor mensen met diabetes in Midden-Limburg. Samen werken we aan bewustwording, ondersteuning en een betere kwaliteit van leven.</p> </div>
+            <!-- Home Page (VERWIJDERD) -->
+
             <!-- Diabetes Q&A Page -->
-             <div id="qa" class="page-content qa-page"> <h2 class="page-title">Diabetes Q&A</h2> <div class="iframe-page-container"> <iframe src="https://fredje4711.github.io/Q-A_Diabetes/" title="Diabetes Q&A" loading="lazy"></iframe> </div> <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/Q-A_Diabetes/" target="_blank">Open Q&A in nieuw venster</a></p> </div>
+             <div id="qa" class="page-content qa-page active"> <!-- Start nu met deze actief -->
+                 <h2 class="page-title">Diabetes Q&A</h2>
+                 <div class="iframe-page-container">
+                     <iframe src="https://fredje4711.github.io/Q-A_Diabetes/" title="Diabetes Q&A" loading="lazy"></iframe>
+                 </div>
+                 <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/Q-A_Diabetes/" target="_blank">Open Q&A in nieuw venster</a></p>
+            </div>
             <!-- Diabetes Quiz Page -->
-             <div id="quiz" class="page-content quiz-page"> <h2 class="page-title">Diabetes Quiz</h2> <div class="iframe-page-container"> <iframe src="https://fredje4711.github.io/Diabetes_Quiz/" title="Diabetes Quiz" loading="lazy"></iframe> </div> <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/Diabetes_Quiz/" target="_blank">Open Quiz in nieuw venster</a></p> </div>
+             <div id="quiz" class="page-content quiz-page">
+                 <h2 class="page-title">Diabetes Quiz</h2>
+                 <div class="iframe-page-container">
+                     <iframe src="https://fredje4711.github.io/Diabetes_Quiz/" title="Diabetes Quiz" loading="lazy"></iframe>
+                 </div>
+                 <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/Diabetes_Quiz/" target="_blank">Open Quiz in nieuw venster</a></p>
+            </div>
             <!-- Koolhydraten Calculator Page -->
-             <div id="calculator" class="page-content calculator-page"> <h2 class="page-title">Koolhydraten Calculator</h2> <div class="iframe-page-container"> <iframe src="https://fredje4711.github.io/KoolhydratenCalculatorApp/" title="Koolhydraten Calculator" loading="lazy"></iframe> </div> <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/KoolhydratenCalculatorApp/" target="_blank">Open Calculator in nieuw venster</a></p> </div>
+             <div id="calculator" class="page-content calculator-page">
+                 <h2 class="page-title">Koolhydraten Calculator</h2>
+                 <div class="iframe-page-container">
+                     <iframe src="https://fredje4711.github.io/KoolhydratenCalculatorApp/" title="Koolhydraten Calculator" loading="lazy"></iframe>
+                 </div>
+                 <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/KoolhydratenCalculatorApp/" target="_blank">Open Calculator in nieuw venster</a></p>
+            </div>
              <!-- QR-Code Generator Page -->
-             <div id="qrcode" class="page-content qrcode-page"> <h2 class="page-title">QR-Code generator</h2> <div class="iframe-page-container"> <iframe src="https://fredje4711.github.io/qr-code-generator/" title="QR-Code Generator" loading="lazy"></iframe> </div> <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/qr-code-generator/" target="_blank">Open Generator in nieuw venster</a></p> </div>
+             <div id="qrcode" class="page-content qrcode-page">
+                 <h2 class="page-title">QR-Code generator</h2>
+                 <div class="iframe-page-container">
+                     <iframe src="https://fredje4711.github.io/qr-code-generator/" title="QR-Code Generator" loading="lazy"></iframe>
+                 </div>
+                 <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/qr-code-generator/" target="_blank">Open Generator in nieuw venster</a></p>
+            </div>
             <!-- Photos Page (VERWIJDERD) -->
             <!-- Contact Page (DLML App) -->
-            <div id="contact" class="page-content"> <h2 class="page-title">DLML Activiteiten App</h2> <div class="jotform-iframe-wrapper"> <div class="jotform-iframe-container"> <iframe id="JotFormIFrame-243115564264353" title="DLML" allow="geolocation; microphone; camera" src="https://eu.jotform.com/app/243115564264353?appEmbedded=1" loading="lazy"></iframe> </div> </div> </div>
+            <div id="contact" class="page-content">
+                 <h2 class="page-title">DLML Activiteiten App</h2>
+                 <div class="jotform-iframe-wrapper"> <div class="jotform-iframe-container"> <iframe id="JotFormIFrame-243115564264353" title="DLML" allow="geolocation; microphone; camera" src="https://eu.jotform.com/app/243115564264353?appEmbedded=1" loading="lazy"></iframe> </div> </div>
+             </div>
         </main>
          <!-- Einde .wrapper div -->
     </div>
-
-    <!-- GEEN Lightbox meer -->
 
      <!-- Footer -->
      <footer style="text-align: center; margin-top: 30px; padding: 15px; border-top: 1px solid #eee; color: #666; font-size: 0.9em;">
@@ -139,10 +161,10 @@ body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; 
     </footer>
 
     <script>
-        // Script ZONDER toggle en ZONDER lightbox/gallery
+        // Script ZONDER toggle, ZONDER lightbox/gallery
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOM Loaded, simplified version.");
+            console.log("DOM Loaded, final simplified version.");
             const menuLinks = document.querySelectorAll('.menu-link');
             const pages = document.querySelectorAll('.page-content');
 
@@ -155,23 +177,28 @@ body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; 
 
         // --- Paginanavigatie Functies ---
          function setupPageNavigation(menuLinks, pages) {
+             const defaultPage = 'qa'; // Nieuwe standaard/fallback pagina
+
              function showPage(pageId) {
                  console.log("Showing page:", pageId);
                  pages.forEach(page => { page.classList.remove('active'); });
                  const activePage = document.getElementById(pageId);
+
                  if (activePage) {
                      activePage.classList.add('active');
-                     // Scroll body naar top, want body is nu het scrollende element
-                     window.scrollTo({ top: 0, behavior: 'smooth' }); // Soepel scrollen
                  } else {
-                     const homePage = document.getElementById('home');
-                     if(homePage) homePage.classList.add('active'); // Fallback
-                     console.warn(`Page ${pageId} not found, showing home.`);
-                     window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll ook bij fallback
+                     // Fallback naar de eerste menu-item pagina als de ID niet bestaat
+                     const fallbackPage = document.getElementById(defaultPage);
+                     if (fallbackPage) fallbackPage.classList.add('active');
+                     console.warn(`Page ${pageId} not found, showing default page '${defaultPage}'.`);
                  }
+                  // Scroll body naar top
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                  // Update actieve link stijl
                   menuLinks.forEach(link => {
-                     link.classList.toggle('active-link', link.getAttribute('data-page') === pageId);
-                 });
+                     link.classList.toggle('active-link', link.getAttribute('data-page') === pageId || (!activePage && link.getAttribute('data-page') === defaultPage));
+                  });
              }
 
              menuLinks.forEach(link => {
@@ -181,19 +208,21 @@ body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; 
                      if (window.location.hash !== `#${pageId}`) {
                          window.location.hash = pageId; // Triggert hashchange
                      } else {
-                         showPage(pageId); // Forceer als hash niet verandert
+                         showPage(pageId); // Forceer als hash niet verandert (of voor eerste klik)
                      }
                  });
              });
 
               function handleHashChange() {
-                  const pageId = window.location.hash.substring(1) || 'home';
+                  // Gebruik defaultPage als fallback
+                  const pageId = window.location.hash.substring(1) || defaultPage;
                   showPage(pageId);
               }
               window.addEventListener('hashchange', handleHashChange);
               handleHashChange(); // Initieel laden
               console.log("Page navigation listeners added.");
          }
+         // --- Einde Paginanavigatie ---
 
     </script>
  </body>

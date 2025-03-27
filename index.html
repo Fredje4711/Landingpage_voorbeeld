@@ -13,18 +13,15 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <style>
+/* CSS gebaseerd op index(3).html, ZONDER vaste layout, MET responsive fix */
 :root {
     --primary-color: #23A9E4;
     --primary-light: #4FBFF0;
     --primary-dark: #1B86B6;
     --text-color: #333333;
     --white-color: #ffffff;
-    /* Definieer HOOGTES voor beide */
-    --banner-height-desktop: 200px;
-    --banner-height-mobile: 120px; /* Kleinere mobiele banner */
-    /* Definieer BREEDTES voor beide */
-    --sidebar-width-desktop: 300px;
-    --sidebar-width-mobile: 0px; /* Standaard verborgen */
+    --banner-height-desktop: 200px; /* Desktop banner hoogte */
+    --sidebar-width-desktop: 300px; /* Desktop sidebar breedte */
 }
 
 body {
@@ -32,124 +29,154 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f8f9fa;
-    overflow: hidden; /* Body scrollt niet */
+    min-height: 100vh;
+    overflow-y: auto; /* Body mag scrollen */
+    overflow-x: hidden; /* Voorkom horizontaal scrollen */
 }
 
-/* --- VASTE BANNER --- */
+/* --- Banner (Standaard) --- */
 .banner {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-    height: var(--banner-height-desktop); /* Start desktop */
-    position: fixed; top: 0; left: 0; width: 100%; z-index: 100; overflow: hidden;
-    transition: height 0.3s ease-in-out;
+    height: var(--banner-height-desktop);
+    position: relative; /* Niet fixed */
+    overflow: hidden;
+    width: 100%;
 }
-.banner-content { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 1rem; }
-.banner-title { font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); margin-top: 0.5rem; transition: font-size 0.3s ease-in-out; }
-.banner .lead { font-size: 1.1rem; transition: font-size 0.3s ease-in-out;}
+.banner-content { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 3rem 2rem; }
+.banner-title { font-size: 3.5rem; font-weight: 700; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); margin-top: 1rem; }
+.banner .lead { font-size: 1.1rem; }
 
-/* --- VASTE SIDEBAR --- */
+/* --- Layout (Grid voor Desktop) --- */
+.wrapper {
+    display: grid;
+    grid-template-columns: var(--sidebar-width-desktop) 1fr; /* Desktop layout */
+    gap: 2rem;
+    padding: 2rem;
+    /* min-height en overflow niet nodig, body scrollt */
+}
+
+/* --- Sidebar (Sticky op Desktop) --- */
 .sidebar {
     background: linear-gradient(160deg, var(--primary-color), var(--primary-dark));
-    padding: 1.5rem; box-shadow: 4px 0 15px rgba(0,0,0,0.1);
-    position: fixed; /* VAST */
-    top: var(--banner-height-desktop); /* Start desktop */
-    left: 0;
-    width: var(--sidebar-width-desktop); /* Start desktop */
-    height: calc(100vh - var(--banner-height-desktop)); /* Start desktop */
-    overflow-y: auto; z-index: 99; box-sizing: border-box;
-    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out, top 0.3s ease-in-out, height 0.3s ease-in-out;
-    transform: translateX(0); /* Start zichtbaar */
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: sticky; /* Sticky op desktop */
+    top: 2rem; /* Afstand vanaf top viewport */
+    height: fit-content; /* Hoogte aanpassen aan inhoud */
 }
 .menu-list { list-style: none; padding: 0; margin: 0; }
 .menu-item { margin: 0.5rem 0; }
-.menu-link { display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1rem; color: white; text-decoration: none; border-radius: 8px; transition: background-color 0.3s ease; background: rgba(255,255,255,0.1); }
+.menu-link { display: flex; align-items: center; gap: 0.8rem; padding: 1rem; color: white; text-decoration: none; border-radius: 8px; transition: all 0.3s ease; background: rgba(255,255,255,0.1); }
 .menu-link i { width: 20px; text-align: center; }
-.menu-link:hover { background: rgba(255,255,255,0.2); color: white; }
+.menu-link:hover { background: rgba(255,255,255,0.2); transform: translateX(5px); color: white; }
 .menu-link.active-link { font-weight: bold; background: rgba(255,255,255,0.25); }
 
-/* --- SCROLLENDE CONTENT AREA --- */
+/* --- Content Area (Standaard) --- */
 .content {
-    margin-top: var(--banner-height-desktop); /* Start desktop */
-    margin-left: var(--sidebar-width-desktop); /* Start desktop */
-    padding: 2rem; background: #f8f9fa;
-    height: calc(100vh - var(--banner-height-desktop)); /* Start desktop */
-    overflow-y: auto; /* Scrollbar hier */
-    box-sizing: border-box;
-    transition: margin-left 0.3s ease-in-out, margin-top 0.3s ease-in-out, height 0.3s ease-in-out;
+    padding: 0; /* Padding zit in .page-content */
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    overflow-y: visible; /* Content scrollt niet zelf */
+    min-height: auto;
 }
 
 /* Page Content Styles */
-.page-content { display: none; background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 2rem; }
-.content .page-content:last-child { margin-bottom: 0; }
+.page-content { display: none; background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+.page-content:last-child { margin-bottom: 0; }
 .page-content.active { display: block; animation: fadeIn 0.5s ease-in-out; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .page-title { color: var(--primary-color); margin-bottom: 1.5rem; margin-top: 0; padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary-light); }
 
-/* Iframe containers, Gallery, Lightbox, Footer (grotendeels ongewijzigd) */
+/* Iframe containers */
 .iframe-page-container { width: 100%; aspect-ratio: 16 / 11; overflow: hidden; border: 1px solid #eee; margin-bottom: 10px; position: relative; }
 .iframe-page-container iframe { width: 100%; height: 100%; border: none; display: block; }
-.qa-page .iframe-page-container { aspect-ratio: unset; overflow: visible; border: none; height: auto; margin-bottom: 0; }
-.qa-page .iframe-page-container iframe { width: 100%; height: auto; min-height: 80vh; border: 1px solid #eee; display: block; } /* Auto hoogte, min hoogte */
-.jotform-iframe-wrapper { /* ... */ } .jotform-iframe-container { /* ... */ } .jotform-iframe-container iframe { /* ... */ }
+/* Specifiek voor Q&A */
+.qa-page .iframe-page-container { width: 100%; height: 80vh; /* Geef een goede hoogte */ overflow-y: auto; /* Scrollbar op container */ border: 1px solid #eee; margin-bottom: 10px; aspect-ratio: unset; }
+.qa-page .iframe-page-container iframe { width: 100%; height: 100%; border: none; display: block; }
+/* JotForm */
+.jotform-iframe-wrapper { text-align: center; }
+.jotform-iframe-container { display: inline-block; max-width: 100%; }
+.jotform-iframe-container iframe { height: 600px; width: 375px; max-width: 100%; border: 5pt solid var(--primary-color); display: block; margin: auto; }
+
+/* Gallery */
 .gallery { /* ... */ } .gallery-item { /* ... */ } .gallery-item:hover { /* ... */ } .gallery-item img { /* ... */ }
-.lightbox { /* ... */ } .lightbox-content { /* ... */ } .lightbox-image { /* ... */ } .lightbox-close { top: 20px; right: 20px; /* ... */ } .lightbox-nav { /* ... */ } .lightbox-prev { /* ... */ } .lightbox-next { /* ... */ } .lightbox-counter { /* ... */ }
 
+/* Lightbox */
+.lightbox { /* ... */ } .lightbox-content { /* ... */ } .lightbox-image { /* ... */ }
+.lightbox-close { position: fixed; top: 80px; right: 20px; /* ... */ } /* Terug naar vaste positie */
+.lightbox-nav { /* ... */ } .lightbox-prev { /* ... */ } .lightbox-next { /* ... */ } .lightbox-counter { /* ... */ }
 
-/* --- RESPONSIVE AANPASSINGEN voor VASTE LAYOUT --- */
+/* GEEN .device-toggle stijl */
 
-/* Tablet (Sidebar verdwijnt, Content neemt breedte over) */
-@media (max-width: 992px) {
+/* --- RESPONSIVE AANPASSINGEN (Grid naar Stack, Sidebar niet sticky) --- */
+@media (max-width: 992px) { /* Tablet en kleiner */
+    .wrapper {
+        grid-template-columns: 1fr; /* Enkele kolom */
+        padding: 1.5rem; /* Responsive padding */
+        gap: 1.5rem;
+        overflow-y: visible; /* Wrapper scrollt niet */
+    }
     .sidebar {
-        transform: translateX(-100%); /* Schuif volledig uit beeld */
-        width: 0; /* Geef geen breedte meer */
-        padding-left: 0;
-        padding-right: 0;
-        box-shadow: none;
-        /* TODO: Hamburger menu logica nodig */
+        position: static; /* NIET STICKY */
+        width: auto; /* Volle breedte */
+        margin-bottom: 1.5rem; /* Ruimte eronder */
+        top: auto;
+        height: auto; /* Hoogte gebaseerd op inhoud */
     }
     .content {
-        margin-left: 0; /* Content neemt volle breedte */
-        padding: 1.5rem; /* Responsive padding */
+        /* Styles hier zijn minder relevant omdat .page-content nu de styling heeft */
     }
-     .banner-title { font-size: 2.5rem; }
+     .page-content { padding: 1.5rem; } /* Padding voor content op tablet */
+     .banner-title { font-size: 2.8rem; }
 }
 
-/* Grote Telefoon / Kleine Tablet (Banner wordt kleiner) */
-@media (max-width: 768px) {
-    .banner { height: var(--banner-height-mobile); } /* Gebruik mobiele hoogte */
-    .banner-title { font-size: 2rem; }
-    .sidebar {
-        top: var(--banner-height-mobile); /* Pas top aan */
-        height: calc(100vh - var(--banner-height-mobile)); /* Pas hoogte aan */
-    }
-     .content {
-        margin-top: var(--banner-height-mobile); /* BELANGRIJK: Ruimte voor mobiele banner */
-        height: calc(100vh - var(--banner-height-mobile)); /* BELANGRIJK: Pas hoogte aan */
-        padding: 1rem; /* Mobiele padding */
-    }
-     .gallery { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-     .lightbox-close { top: 15px; right: 15px; width: 40px; height: 40px; font-size: 30px; }
-     .lightbox-nav { width: 40px; height: 40px; font-size: 24px; }
+@media (max-width: 768px) { /* Grote telefoon / Kleine tablet */
+    .banner { height: 180px; }
+    .banner-title { font-size: 2.2rem; }
+    .wrapper { padding: 1rem; gap: 1rem; }
+    .sidebar, .page-content { padding: 1.2rem; border-radius: 10px;}
+    .gallery { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;}
+    .gallery-item img { height: 180px; }
+    .lightbox-close { top: 15px; right: 15px; width: 40px; height: 40px; font-size: 30px; }
+    .lightbox-nav { width: 40px; height: 40px; font-size: 24px; }
 }
 
-/* Kleine Telefoon (Banner nog kleiner) */
-@media (max-width: 480px) {
-     :root { --banner-height-mobile: 100px; } /* Nog kleinere banner */
-     .banner { height: var(--banner-height-mobile); }
-     .banner-title { font-size: 1.6rem; }
-     .banner .lead { font-size: 1rem; }
-     .sidebar { top: var(--banner-height-mobile); height: calc(100vh - var(--banner-height-mobile)); }
-     .content { margin-top: var(--banner-height-mobile); height: calc(100vh - var(--banner-height-mobile)); padding: 0.8rem;}
-     .page-content { padding: 1rem; border-radius: 8px;} /* Minder padding binnen content */
-     .page-title { margin-bottom: 1rem;}
-     .gallery { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
-     .gallery-item img { height: 120px; }
-     .lightbox-close { top: 10px; right: 10px; }
+@media (max-width: 480px) { /* Kleine telefoon */
+    .banner { height: 150px; }
+    .banner-title { font-size: 1.8rem; }
+    .wrapper { padding: 0.8rem; gap: 0.8rem; }
+    .sidebar, .page-content { padding: 1rem; border-radius: 8px;}
+    .menu-link { padding: 0.8rem; gap: 0.6rem;}
+    .gallery { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
+    .gallery-item img { height: 140px; }
+    .page-title { margin-bottom: 1rem; }
+    .lightbox-close { top: 10px; right: 10px; }
 }
 
-/* Touch/Print (ongewijzigd) */
-@media (hover: none) { /* ... */ }
-@media print { /* ... */ }
+/* Touch Device Optimizations */
+@media (hover: none) {
+    .menu-link:hover { transform: none; background: rgba(255,255,255,0.1); }
+    .gallery-item:hover { transform: none; }
+    .lightbox-close:hover { background: rgba(255,255,255,0.2); transform: none; }
+    .lightbox-nav:hover { background: rgba(255,255,255,0.2); transform: translateY(-50%);}
+    .menu-link:active { background: rgba(255,255,255,0.3); }
+    .gallery-item:active { opacity: 0.8; }
+}
 
+/* Print Styles */
+@media print {
+     body { overflow-y: visible; }
+     .sidebar, .banner, .lightbox, footer { display: none !important; }
+     .wrapper { display: block; padding: 1in; }
+     .content { box-shadow: none; padding: 0; border-radius: 0; }
+     .page-content { display: block !important; margin-bottom: 2rem; page-break-inside: avoid; animation: none; box-shadow: none; border-radius: 0; padding: 0; background: white;}
+     .page-title { color: black; border-bottom: 1px solid #ccc; }
+     .gallery, .iframe-page-container, .jotform-iframe-wrapper { display: none; }
+     a { text-decoration: none; color: black; }
+     a[href^="http"]:after { content: " (" attr(href) ")"; font-size: 0.8em; }
+}
 </style>
 
 </head>

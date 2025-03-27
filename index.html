@@ -13,7 +13,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <style>
-/* CSS van test_sidebar_only.html (basis = index(3).html) */
+/* CSS ZONDER device toggle & mobile-view simulatie */
 :root { --primary-color: #23A9E4; --primary-light: #4FBFF0; --primary-dark: #1B86B6; --text-color: #333333; --white-color: #ffffff; }
 body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; min-height: 100vh; overflow-y: auto; }
 .banner { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); height: 200px; position: relative; overflow: hidden; }
@@ -46,38 +46,20 @@ body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; 
 .page-content.active { display: block; animation: fadeIn 0.5s ease-in-out; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .page-title { color: var(--primary-color); margin-bottom: 2rem; margin-top: 0; padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary-light);}
-.iframe-container { display: flex; justify-content: flex-start; } /* Voor JotForm */
-/* Algemene Iframe Container Stijl */
+.iframe-container { display: flex; justify-content: flex-start; }
 .iframe-page-container { width: 100%; aspect-ratio: 16 / 11; overflow: hidden; border: 1px solid #eee; margin-bottom: 10px; position: relative; }
 .iframe-page-container iframe { width: 100%; height: 100%; border: none; display: block; }
-/* Specifieke stijl voor Q&A Container (om dubbele scrollbar te voorkomen) */
-.qa-page .iframe-page-container {
-    width: 100%;
-    height: 100vh; /* Vaste hoogte (viewport hoogte) */
-    overflow-y: auto; /* Scrollbar op DEZE container indien nodig */
-    border: 1px solid #eee;
-    margin-bottom: 10px;
-    aspect-ratio: unset; /* Verwijder aspect-ratio */
-}
-/* Iframe BINNEN Q&A container vult deze container */
-.qa-page .iframe-page-container iframe {
-    width: 100%;
-    height: 100%; /* Vult de container */
-    border: none;
-    display: block;
-}
+/* Specifieke stijl voor Q&A Container */
+.qa-page .iframe-page-container { width: 100%; height: 100vh; overflow-y: auto; border: 1px solid #eee; margin-bottom: 10px; aspect-ratio: unset; }
+.qa-page .iframe-page-container iframe { width: 100%; height: 100%; border: none; display: block; }
 .jotform-iframe-wrapper { text-align: center; }
 .jotform-iframe-container { display: inline-block; max-width: 100%; }
 .jotform-iframe-container iframe { height: 600px; width: 375px; max-width: 100%; border: 5pt solid var(--primary-color); display: block; margin: auto; }
-.device-toggle { position: fixed; top: 20px; right: 20px; z-index: 1001; background: var(--primary-color); color: white; border: none; padding: 10px 15px; border-radius: 20px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2); transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
-.device-toggle:hover { background: var(--primary-dark); transform: translateY(-2px); }
-.device-toggle i { font-size: 1.2em; }
-body.mobile-view { max-width: 480px; margin: 0 auto; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.2); min-height: 100vh; overflow-y: auto; border: 1px solid #ccc; }
-body.mobile-view .wrapper { grid-template-columns: 1fr; height: auto; min-height: 0; padding: 1rem; overflow-y: visible; }
-body.mobile-view .sidebar { position: sticky; top: 0; z-index: 100; margin-bottom: 1rem; }
-body.mobile-view .content { min-height: auto; overflow-y: visible; }
-body.mobile-view .gallery { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-body.mobile-view .banner-title { font-size: 2rem; }
+
+/* GEEN .device-toggle stijl meer */
+/* GEEN body.mobile-view stijlen meer */
+
+/* Responsive Design (Behoud basis layout aanpassingen) */
 @media (max-width: 768px) { /* Responsive */ }
 @media (max-width: 480px) { /* Responsive */ }
 @media (hover: none) { /* Touch */ }
@@ -85,11 +67,7 @@ body.mobile-view .banner-title { font-size: 2rem; }
 </style>
 </head>
 <body>
-    <!-- Device Toggle Button -->
-    <button class="device-toggle">
-        <i class="fas fa-mobile-alt"></i>
-        <span class="toggle-text">GSM weergave</span>
-    </button>
+    <!-- GEEN Device Toggle Button hier -->
 
     <!-- Banner -->
     <div class="banner"> <div class="banner-content"> <h1 class="banner-title">Diabetes Liga Midden Limburg</h1> <p class="lead">Samen sterk voor een betere toekomst</p> </div> </div>
@@ -109,52 +87,18 @@ body.mobile-view .banner-title { font-size: 2rem; }
             </ul>
         </nav>
 
-        <!-- Content Area (ALLE SECTIES NU GEVULD) -->
+        <!-- Content Area (ALLE SECTIES GEVULD) -->
         <main class="content">
             <!-- Home Page -->
             <div id="home" class="page-content active"> <h2 class="page-title">Welkom bij Diabetes Liga Midden Limburg</h2> <p>Wij zijn een organisatie die zich inzet voor mensen met diabetes in Midden-Limburg. Samen werken we aan bewustwording, ondersteuning en een betere kwaliteit van leven.</p> </div>
-
             <!-- Diabetes Q&A Page (MET QA-PAGE CLASS) -->
-             <div id="qa" class="page-content qa-page"> <!-- Class toegevoegd -->
-                <h2 class="page-title">Diabetes Q&A</h2>
-                 <div class="iframe-page-container"> <!-- Standaard container class, maar overschreven door .qa-page CSS -->
-                     <iframe
-                       src="https://fredje4711.github.io/Q-A_Diabetes/"
-                       title="Diabetes Q&A"
-                       loading="lazy">
-                       <!-- GEEN id of scrolling attribuut meer nodig -->
-                    </iframe>
-                 </div>
-                 <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/Q-A_Diabetes/" target="_blank">Open Q&A in nieuw venster</a></p>
-            </div>
-
+             <div id="qa" class="page-content qa-page"> <h2 class="page-title">Diabetes Q&A</h2> <div class="iframe-page-container"> <iframe src="https://fredje4711.github.io/Q-A_Diabetes/" title="Diabetes Q&A" loading="lazy"></iframe> </div> <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/Q-A_Diabetes/" target="_blank">Open Q&A in nieuw venster</a></p> </div>
             <!-- Diabetes Quiz Page -->
-             <div id="quiz" class="page-content">
-                <h2 class="page-title">Diabetes Quiz</h2>
-                 <div class="iframe-page-container">
-                     <iframe src="https://fredje4711.github.io/Diabetes_Quiz/" title="Diabetes Quiz" loading="lazy"></iframe>
-                 </div>
-                 <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/Diabetes_Quiz/" target="_blank">Open Quiz in nieuw venster</a></p>
-            </div>
-
+             <div id="quiz" class="page-content"> <h2 class="page-title">Diabetes Quiz</h2> <div class="iframe-page-container"> <iframe src="https://fredje4711.github.io/Diabetes_Quiz/" title="Diabetes Quiz" loading="lazy"></iframe> </div> <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/Diabetes_Quiz/" target="_blank">Open Quiz in nieuw venster</a></p> </div>
             <!-- Koolhydraten Calculator Page -->
-             <div id="calculator" class="page-content">
-                <h2 class="page-title">Koolhydraten Calculator</h2>
-                <div class="iframe-page-container">
-                     <iframe src="https://fredje4711.github.io/KoolhydratenCalculatorApp/" title="Koolhydraten Calculator" loading="lazy"></iframe>
-                </div>
-                <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/KoolhydratenCalculatorApp/" target="_blank">Open Calculator in nieuw venster</a></p>
-            </div>
-
+             <div id="calculator" class="page-content"> <h2 class="page-title">Koolhydraten Calculator</h2> <div class="iframe-page-container"> <iframe src="https://fredje4711.github.io/KoolhydratenCalculatorApp/" title="Koolhydraten Calculator" loading="lazy"></iframe> </div> <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/KoolhydratenCalculatorApp/" target="_blank">Open Calculator in nieuw venster</a></p> </div>
              <!-- QR-Code Generator Page -->
-             <div id="qrcode" class="page-content">
-                <h2 class="page-title">QR-Code generator</h2>
-                 <div class="iframe-page-container">
-                     <iframe src="https://fredje4711.github.io/qr-code-generator/" title="QR-Code Generator" loading="lazy"></iframe>
-                </div>
-                 <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/qr-code-generator/" target="_blank">Open Generator in nieuw venster</a></p>
-            </div>
-
+             <div id="qrcode" class="page-content"> <h2 class="page-title">QR-Code generator</h2> <div class="iframe-page-container"> <iframe src="https://fredje4711.github.io/qr-code-generator/" title="QR-Code Generator" loading="lazy"></iframe> </div> <p style="margin-top: 10px; text-align: center;"><a href="https://fredje4711.github.io/qr-code-generator/" target="_blank">Open Generator in nieuw venster</a></p> </div>
             <!-- Photos Page -->
             <div id="photos" class="page-content"> <h2 class="page-title">Photo Gallery</h2> <div class="gallery" id="gallery"> <!-- JS vult dit --> </div> </div>
             <!-- Contact Page (DLML App) -->
@@ -184,6 +128,8 @@ body.mobile-view .banner-title { font-size: 2rem; }
     </footer>
 
     <script>
+        // Script ZONDER toggle knop logica, MET herstelde gallery setup
+
         // Globale variabelen voor lightbox
         let currentLightboxIndex = 0;
         const lightboxImages = [ // Definieer images hier, globaal toegankelijk
@@ -193,58 +139,96 @@ body.mobile-view .banner-title { font-size: 2rem; }
             'https://picsum.photos/800/600?random=10', 'https://picsum.photos/800/600?random=11', 'https://picsum.photos/800/600?random=12'
         ];
 
-        // --- Globale Functie om Lightbox Afbeelding te Tonen (met direct querySelector) ---
+        // --- Globale Functie om Lightbox Afbeelding te Tonen ---
         function showLightboxImage(index) {
             const lightbox = document.querySelector('.lightbox');
             const lightboxImage = document.querySelector('.lightbox-image'); // Direct zoeken
             const counter = document.querySelector('.lightbox-counter'); // Direct zoeken
-            console.log(`Attempting to show image with index: ${index}`);
-            if (!lightbox || !lightboxImage || !counter) { console.error("showLightboxImage: Lightbox or internal elements not found in document!"); return; }
+            // console.log(`Attempting to show image with index: ${index}`); // Minder logs nu
+            if (!lightbox || !lightboxImage || !counter) { console.error("showLightboxImage: Lightbox elements missing!"); return; }
             if (index < 0 || index >= lightboxImages.length) { console.warn("showLightboxImage: index out of bounds", index); return; }
             currentLightboxIndex = index;
-            try { lightboxImage.src = lightboxImages[index]; counter.textContent = `${index + 1} / ${lightboxImages.length}`; console.log(`Lightbox updated: Image ${index + 1}`); }
+            try { lightboxImage.src = lightboxImages[index]; counter.textContent = `${index + 1} / ${lightboxImages.length}`; }
             catch (e) { console.error("Error updating lightbox image/counter:", e); }
         }
-        // --- Einde Globale Functie ---
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOM Loaded, final version with iframe height adjustments.");
-            // --- Definieer variabelen voor elementen ---
+            console.log("DOM Loaded, final version WITHOUT toggle button.");
             const gallery = document.getElementById('gallery');
             const lightbox = document.querySelector('.lightbox');
             const menuLinks = document.querySelectorAll('.menu-link');
             const pages = document.querySelectorAll('.page-content');
-            const deviceToggle = document.querySelector('.device-toggle');
 
-            // --- Initialiseer Galerij ---
             if (gallery) { setupGallery(gallery, lightboxImages); console.log("Gallery setup called."); }
             else { console.log("Gallery element not found."); }
-            // --- Initialiseer Lightbox (listeners) ---
             if (lightbox) { setupLightboxListeners(lightbox, lightboxImages); console.log("Lightbox setup called."); }
             else { console.log("Lightbox element not found."); }
-            // --- Initialiseer Paginanavigatie ---
             if (menuLinks.length > 0 && pages.length > 0) { setupPageNavigation(menuLinks, pages); console.log("Nav setup called."); }
             else { console.error("Menu or page elements missing!"); }
-            // --- Initialiseer Device Toggle ---
-            if (deviceToggle) { setupDeviceToggle(deviceToggle); console.log("Toggle setup called."); }
-            else { console.error("Toggle button missing!"); }
+            // GEEN Device Toggle initialisatie
             console.log("Initial setup calls complete.");
-        }); // Einde DOMContentLoaded
+        });
 
-        // --- Galerij Setup Functie ---
-        function setupGallery(galleryElement, imagesArray) { if (!galleryElement) return; galleryElement.innerHTML = ''; imagesArray.forEach((image, index) => { const item = document.createElement('div'); item.className = 'gallery-item'; item.innerHTML = `<img src="${image}" alt="Gallery image ${index + 1}" loading="lazy">`; item.dataset.index = index; galleryElement.appendChild(item); }); if (!galleryElement.dataset.listenerAttached) { galleryElement.addEventListener('click', handleGalleryClick); galleryElement.dataset.listenerAttached = 'true'; console.log("Gallery listener added."); } }
+        // --- Galerij Setup Functie (HERSTELD) ---
+        function setupGallery(galleryElement, imagesArray) {
+            if (!galleryElement) { console.log("Gallery element not found in setup."); return; }
+            console.log("Setting up gallery content...");
+            galleryElement.innerHTML = ''; // Maak eerst leeg
+            imagesArray.forEach((image, index) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                // BELANGRIJK: Voeg daadwerkelijk de img tag toe
+                item.innerHTML = `<img src="${image}" alt="Gallery image ${index + 1}" loading="lazy">`;
+                item.dataset.index = index;
+                galleryElement.appendChild(item); // Voeg item toe aan de galerij div
+            });
+            // Voeg listener alleen toe als deze nog niet bestaat
+             if (!galleryElement.dataset.listenerAttached) {
+                 galleryElement.addEventListener('click', handleGalleryClick);
+                 galleryElement.dataset.listenerAttached = 'true';
+                 console.log("Gallery content CREATED and listener added."); // Aangepast log
+             } else {
+                  console.log("Gallery listener already attached.");
+             }
+        }
+
 
         // --- Lightbox Setup Functie (alleen listeners - met direct querySelector) ---
-        function setupLightboxListeners(lightboxElement, imagesArray) { console.log("Setting up lightbox listeners using direct document query..."); if (!lightboxElement) { console.error("setupLightboxListeners: Lightbox element is null."); return; } const close = document.querySelector('.lightbox-close'); const prev = document.querySelector('.lightbox-prev'); const next = document.querySelector('.lightbox-next'); if (!close || !prev || !next ) { console.error("setupLightboxListeners: Control elements (close, prev, next) were NOT found in document! ABORTING listener setup."); console.log({ close, prev, next }); return; } if (lightboxElement.dataset.listenersAttached) { console.log("Lightbox listeners already attached."); return; } console.log("All required lightbox control elements found. Adding listeners..."); close.addEventListener('click', () => { lightboxElement.style.display = 'none'; document.body.style.overflow = ''; console.log("Lightbox closed via button."); }); lightboxElement.addEventListener('click', (e) => { if (e.target === lightboxElement) close.click(); console.log("Lightbox closed via background click."); }); next.addEventListener('click', (e) => { e.stopPropagation(); if(typeof window.showLightboxImage === 'function') window.showLightboxImage((currentLightboxIndex + 1) % imagesArray.length); }); prev.addEventListener('click', (e) => { e.stopPropagation(); if(typeof window.showLightboxImage === 'function') window.showLightboxImage((currentLightboxIndex - 1 + imagesArray.length) % imagesArray.length); }); document.addEventListener('keydown', (e) => { if (lightboxElement.style.display === 'flex') { if (e.key === 'Escape') close.click(); if (e.key === 'ArrowRight') next.click(); if (e.key === 'ArrowLeft') prev.click(); } }); lightboxElement.dataset.listenersAttached = 'true'; console.log("Lightbox listeners added successfully."); }
+        function setupLightboxListeners(lightboxElement, imagesArray) {
+            console.log("Setting up lightbox listeners using direct document query...");
+            if (!lightboxElement) { console.error("setupLightboxListeners: Lightbox element is null."); return; }
+            const close = document.querySelector('.lightbox-close'); const prev = document.querySelector('.lightbox-prev'); const next = document.querySelector('.lightbox-next');
+            if (!close || !prev || !next ) { console.error("setupLightboxListeners: Control elements were NOT found! ABORTING."); return; }
+            if (lightboxElement.dataset.listenersAttached) { console.log("Lightbox listeners already attached."); return; }
+            console.log("All required lightbox control elements found. Adding listeners...");
+            close.addEventListener('click', () => { lightboxElement.style.display = 'none'; document.body.style.overflow = ''; });
+            lightboxElement.addEventListener('click', (e) => { if (e.target === lightboxElement) close.click(); });
+            next.addEventListener('click', (e) => { e.stopPropagation(); if(typeof window.showLightboxImage === 'function') window.showLightboxImage((currentLightboxIndex + 1) % imagesArray.length); });
+            prev.addEventListener('click', (e) => { e.stopPropagation(); if(typeof window.showLightboxImage === 'function') window.showLightboxImage((currentLightboxIndex - 1 + imagesArray.length) % imagesArray.length); });
+            document.addEventListener('keydown', (e) => { if (lightboxElement.style.display === 'flex') { if (e.key === 'Escape') close.click(); if (e.key === 'ArrowRight') next.click(); if (e.key === 'ArrowLeft') prev.click(); } });
+            lightboxElement.dataset.listenersAttached = 'true';
+            console.log("Lightbox listeners added successfully.");
+         }
 
          // --- Galerij Klik Handler ---
-         function handleGalleryClick(e) { console.log("handleGalleryClick called."); const lightbox = document.querySelector('.lightbox'); const item = e.target.closest('.gallery-item'); if (item && lightbox) { const index = parseInt(item.dataset.index); if (!isNaN(index)) { if (typeof window.showLightboxImage === 'function') { window.showLightboxImage(index); lightbox.style.display = 'flex'; document.body.style.overflow = 'hidden'; } else { console.error("window.showLightboxImage function not found on click!"); } } } }
+         function handleGalleryClick(e) {
+             console.log("handleGalleryClick called.");
+             const lightbox = document.querySelector('.lightbox');
+             const item = e.target.closest('.gallery-item');
+             if (item && lightbox) {
+                const index = parseInt(item.dataset.index);
+                 if (!isNaN(index)) {
+                     if (typeof window.showLightboxImage === 'function') {
+                         window.showLightboxImage(index); lightbox.style.display = 'flex'; document.body.style.overflow = 'hidden';
+                     } else { console.error("window.showLightboxImage function not found on click!"); }
+                 } else { console.error("Could not parse index from gallery item.");}
+            } else { console.log("Click was not on a gallery item or lightbox element not found.");}
+        }
 
         // --- Paginanavigatie Functies ---
-         function setupPageNavigation(menuLinks, pages) { function showPage(pageId) { console.log("Showing page:", pageId); pages.forEach(page => { page.classList.remove('active'); }); const activePage = document.getElementById(pageId); if (activePage) { activePage.classList.add('active'); window.scrollTo(0, 0); /* Scroll hele pagina naar top */ } else { const homePage = document.getElementById('home'); if(homePage) homePage.classList.add('active'); console.warn(`Page ${pageId} not found, showing home.`); window.scrollTo(0, 0); } menuLinks.forEach(link => { link.classList.toggle('active-link', link.getAttribute('data-page') === pageId); }); } menuLinks.forEach(link => { link.addEventListener('click', (e) => { e.preventDefault(); const pageId = link.getAttribute('data-page'); if (window.location.hash !== `#${pageId}`) { window.location.hash = pageId; } else { showPage(pageId); } }); }); function handleHashChange() { const pageId = window.location.hash.substring(1) || 'home'; showPage(pageId); } window.addEventListener('hashchange', handleHashChange); handleHashChange(); console.log("Page navigation listeners added.");}
+         function setupPageNavigation(menuLinks, pages) { function showPage(pageId) { console.log("Showing page:", pageId); pages.forEach(page => { page.classList.remove('active'); }); const activePage = document.getElementById(pageId); if (activePage) { activePage.classList.add('active'); window.scrollTo(0, 0); } else { const homePage = document.getElementById('home'); if(homePage) homePage.classList.add('active'); console.warn(`Page ${pageId} not found, showing home.`); window.scrollTo(0, 0); } menuLinks.forEach(link => { link.classList.toggle('active-link', link.getAttribute('data-page') === pageId); }); } menuLinks.forEach(link => { link.addEventListener('click', (e) => { e.preventDefault(); const pageId = link.getAttribute('data-page'); if (window.location.hash !== `#${pageId}`) { window.location.hash = pageId; } else { showPage(pageId); } }); }); function handleHashChange() { const pageId = window.location.hash.substring(1) || 'home'; showPage(pageId); } window.addEventListener('hashchange', handleHashChange); handleHashChange(); console.log("Page navigation listeners added.");}
 
-        // --- Device Toggle Functie ---
-         function setupDeviceToggle(deviceToggleButton) { const toggleText = deviceToggleButton.querySelector('.toggle-text'); const toggleIcon = deviceToggleButton.querySelector('i'); if (!toggleText || !toggleIcon) { console.error("Toggle text/icon not found"); return; } if (deviceToggleButton.dataset.listenerAttached) return; document.body.classList.remove('mobile-view'); toggleText.textContent = 'GSM weergave'; toggleIcon.className = 'fas fa-mobile-alt'; deviceToggleButton.addEventListener('click', () => { console.log("Toggle clicked!"); document.body.classList.toggle('mobile-view'); if (document.body.classList.contains('mobile-view')) { toggleText.textContent = 'Desktop View'; toggleIcon.className = 'fas fa-desktop'; } else { toggleText.textContent = 'GSM weergave'; toggleIcon.className = 'fas fa-mobile-alt'; } }); deviceToggleButton.dataset.listenerAttached = 'true'; console.log("Device toggle listener added."); }
+        // GEEN setupDeviceToggle functie hier
 
     </script>
  </body>

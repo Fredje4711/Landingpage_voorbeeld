@@ -12,6 +12,29 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
+    <!-- ====================================================== -->
+    <!-- NIEUW: PWA en Favicon toevoegingen                   -->
+    <!-- ====================================================== -->
+
+    <!-- Link naar het Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Thema kleur voor de browser UI (en PWA) -->
+    <meta name="theme-color" content="#23a9e4">
+
+    <!-- Basis Favicon -->
+    <link rel="icon" href="favicon.ico">
+
+    <!-- Optioneel: Voeg hier eventuele andere <link> tags toe die je van RealFaviconGenerator hebt gekregen -->
+    <!-- zoals apple-touch-icon, etc. Zorg dat de href paden kloppen (zonder /Landingpage_voorbeeld/ ervoor, want ze staan in dezelfde map) -->
+    <!-- Bijvoorbeeld: -->
+    <!-- <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"> -->
+    <!-- <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png"> -->
+
+    <!-- ====================================================== -->
+    <!-- Einde NIEUWE toevoegingen in HEAD                    -->
+    <!-- ====================================================== -->
+
 <style>
 /* CSS ZONDER device toggle, ZONDER lightbox, MET aangepaste iframe hoogtes EN mobiele padding fix */
 :root { --primary-color: #23A9E4; --primary-light: #4FBFF0; --primary-dark: #1B86B6; --text-color: #333333; --white-color: #ffffff; }
@@ -177,5 +200,31 @@ body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; 
          // --- Einde Paginanavigatie ---
 
     </script>
+
+    <!-- ====================================================== -->
+    <!-- NIEUW: Service Worker Registratie Script             -->
+    <!-- ====================================================== -->
+    <script>
+      // Service Worker Registratie
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          // We registreren de sw.js die in de root van DIT project staat op de server
+          // Het pad moet absoluut zijn vanaf de domeinnaam.
+          navigator.serviceWorker.register('/Landingpage_voorbeeld/sw.js')
+            .then((registration) => {
+              console.log('Service Worker geregistreerd met scope:', registration.scope);
+            })
+            .catch((error) => {
+              console.error('Service Worker registratie mislukt:', error);
+            });
+        });
+      } else {
+        console.log('Service Workers worden niet ondersteund in deze browser.');
+      }
+    </script>
+    <!-- ====================================================== -->
+    <!-- Einde NIEUWE toevoegingen voor BODY sluit tag        -->
+    <!-- ====================================================== -->
+
  </body>
 </html>

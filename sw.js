@@ -1,45 +1,33 @@
-// Naam van de cache (verander 'v1' als je grote updates doet, bijv. 'v2')
-const CACHE_NAME = 'dlml-tools-cache-v2'; // <--- BIJGEWERKTE VERSIE
+// sw.js
+
+// Naam van de cache - VERHOOG DIT VERSIENUMMER BIJ ELKE UPDATE VAN sw.js of index_.html!
+const CACHE_NAME = 'dlml-tools-cache-v3'; // <--- VERSIE VERHOOGD NAAR v3
 
 // Bestanden die offline beschikbaar moeten zijn
-// Aangepast voor de GitHub Pages structuur (/Landingpage_voorbeeld/)
+// Zorg ervoor dat deze paden exact overeenkomen met de bestanden op GitHub
 const urlsToCache = [
   '/Landingpage_voorbeeld/',                 // De hoofdpagina zelf (index)
-  '/Landingpage_voorbeeld/index.html',       // Het HTML-bestand expliciet
+  '/Landingpage_voorbeeld/index_.html',      // Hernoemd bestand expliciet (index_ was gebruikt in eerdere vraag) - PAS AAN INDIEN NODIG
   '/Landingpage_voorbeeld/manifest.json',    // Het manifest bestand
   '/Landingpage_voorbeeld/icon-192x192.png', // Het 192x192 PWA icoon
   '/Landingpage_voorbeeld/icon-512x512.png', // Het 512x512 PWA icoon
   '/Landingpage_voorbeeld/favicon.ico',      // Het favicon bestand
-
-  // VOEG HIER TOE: Alle andere afbeeldingen (.png, .jpg, etc.) die je eventueel
-  // direct in je index.html gebruikt (dus niet binnen iframes) en die je offline wilt zien.
-  // Bijvoorbeeld: '/Landingpage_voorbeeld/images/mijn-logo.png'
-  //
-  // VOEG HIER TOE: Eventuele andere favicon-bestanden van RealFaviconGenerator als je die hebt geüpload
-  // en ook offline wilt hebben. Controleer de bestandsnamen!
-  // Bijvoorbeeld:
-  // '/Landingpage_voorbeeld/apple-touch-icon.png',
-  // '/Landingpage_voorbeeld/favicon-32x32.png',
-  // '/Landingpage_voorbeeld/favicon-16x16.png',
-  // '/Landingpage_voorbeeld/site.webmanifest', // Als RFG dit ook genereerde
+  // Voeg hier eventuele andere *essentiële* statische bestanden toe
 ];
 
 // Installatie event: Cache de bestanden
 self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installing... Cache Name:', CACHE_NAME); // Log de cache naam
+  console.log('Service Worker: Installing... Cache Name:', CACHE_NAME);
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Service Worker: Caching app shell');
-        // addAll kan falen als ook maar één bestand niet gevonden wordt!
-        // Controleer of alle paden in urlsToCache correct zijn en de bestanden bestaan.
         return cache.addAll(urlsToCache);
       })
       .then(() => {
         console.log('Service Worker: Installatie compleet, bestanden zijn gecached in', CACHE_NAME);
-        // Optioneel: forceer de nieuwe service worker om direct actief te worden
-        // Dit kan handig zijn, maar kan soms onverwacht gedrag veroorzaken als de gebruiker de pagina nog open heeft.
-        // self.skipWaiting();
+        // Forceer de nieuwe service worker om direct actief te worden
+        self.skipWaiting(); // <-- GEACTIVEERD
       })
       .catch((error) => {
         console.error('Service Worker: Caching failed for cache', CACHE_NAME, error);
@@ -48,10 +36,10 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate event: Ruim oude caches op (belangrijk bij versie-updates)
+// Activate event: Ruim oude caches op
 self.addEventListener('activate', (event) => {
   console.log('Service Worker: Activating... Current Cache:', CACHE_NAME);
-  const cacheWhitelist = [CACHE_NAME]; // Alleen de huidige cache (met de juiste versie) behouden
+  const cacheWhitelist = [CACHE_NAME]; // Alleen de huidige cache behouden
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -64,82 +52,76 @@ self.addEventListener('activate', (event) => {
         })
       );
     })
-    // Optioneel: Zorg dat de SW de pagina's direct controleert na activatie
-    // Gebruik dit samen met skipWaiting() in 'install' als je wilt dat de nieuwe SW onmiddellijk controle neemt.
-    // .then(() => self.clients.claim())
+    // Zorg dat de SW de pagina's direct controleert na activatie
+    .then(() => {
+       console.log('Service Worker: Claiming clients now...');
+       return self.clients.claim() // <-- GEACTIVEERD
+    })
   );
   console.log('Service Worker: Activatie compleet voor cache', CACHE_NAME);
 });
 
-// Fetch event: Reageer op netwerkverzoeken (Cache first strategy)
+// Fetch event: Reageer op netwerkverzoeken (Cache first strategy voor gecachte items)
 self.addEventListener('fetch', (event) => {
-  // We reageren alleen op GET requests (niet POST, etc.)
+  // We reageren alleen op GET requests
   if (event.request.method !== 'GET') {
-    // Laat de browser het standaard afhandelen
     return;
   }
 
-  // We proberen alleen verzoeken te cachen die naar dezelfde origin gaan (jouw site)
-  // Dit voorkomt problemen met externe bronnen zoals Tidio, Bootstrap CDN, etc.
-  // We maken een uitzondering voor de iframes, maar die cachen we hier niet actief.
+  // Strategie: Cache first for items in urlsToCache, Network first for others?
+  // Of simpelweg: probeer cache, dan netwerk.
+
+  // Alleen reageren op verzoeken binnen de scope van de PWA (jouw domein)
   if (!event.request.url.startsWith(self.location.origin)) {
-     // console.log('Service Worker: Skipping fetch for external URL:', event.request.url); // Deze log kan veel ruis geven, eventueel uitcommentariëren
-     // Laat de browser het standaard afhandelen (ga direct naar netwerk)
+     // Laat externe verzoeken (Bootstrap, Tidio, FontAwesome, iframes) direct naar het netwerk gaan
      return;
   }
 
-
-  // console.log('Service Worker: Fetching', event.request.url); // Deze log kan ook veel ruis geven
   event.respondWith(
-    // 1. Probeer het antwoord uit de cache te halen (uit de ACTIEVE cache)
     caches.match(event.request)
       .then((response) => {
-        // 2. Als het in de cache zit, geef dat terug
+        // Gevonden in cache
         if (response) {
-          // console.log('Service Worker: Found in cache', event.request.url); // Ruis
+          // Optioneel: Achtergrond update check (Stale-While-Revalidate idee)
+          // fetch(event.request).then(networkResponse => {
+          //   if (networkResponse && networkResponse.ok) {
+          //     caches.open(CACHE_NAME).then(cache => cache.put(event.request, networkResponse));
+          //   }
+          // });
           return response;
         }
 
-        // 3. Als het niet in de cache zit, haal het van het netwerk
-        // console.log('Service Worker: Not found in cache, fetching from network', event.request.url); // Ruis
-        // Belangrijk: Kloon de request, want een request stream kan maar één keer gebruikt worden.
-        const fetchRequest = event.request.clone();
-
-        return fetch(fetchRequest).then(
+        // Niet in cache -> Netwerk
+        // console.log('Service Worker: Not in cache, fetching from network:', event.request.url); // Kan veel logs geven
+        return fetch(event.request).then(
           (networkResponse) => {
-            // 4. Controleer of we een geldig antwoord hebben ontvangen (status 200 OK)
-            //    We cachen alleen 'basic' types (van dezelfde origin) om fouten te voorkomen.
+            // Controleer of we een geldig antwoord hebben
             if(!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-              // console.log('Service Worker: Not caching non-basic or error response from network', event.request.url, networkResponse.status); // Ruis
-              return networkResponse; // Geef het (mogelijk foute) antwoord toch door aan de browser
+              return networkResponse;
             }
 
-            // console.log('Service Worker: Fetched from network', event.request.url); // Ruis
-            // 5. Belangrijk: Kloon het antwoord. Een response stream kan ook maar één keer gelezen worden.
-            //    We moeten één kloon in de cache stoppen en de andere originele teruggeven aan de browser.
+            // Kloon het antwoord om het te kunnen cachen en terug te geven
             const responseToCache = networkResponse.clone();
 
             caches.open(CACHE_NAME)
               .then((cache) => {
-                // console.log('Service Worker: Putting in cache', event.request.url); // Ruis
-                // Voeg het netwerkantwoord toe aan de cache voor de volgende keer
-                cache.put(event.request, responseToCache);
+                 // Alleen cachen als het een van de vooraf gedefinieerde URLs is? Of alles?
+                 // Voor nu: cache het als het van het netwerk komt en OK is.
+                 // console.log('Service Worker: Caching new resource:', event.request.url); // Kan veel logs geven
+                 cache.put(event.request, responseToCache);
               });
 
-            // 6. Geef het originele netwerkantwoord terug aan de browser
             return networkResponse;
           }
         ).catch(error => {
-            // Dit gebeurt meestal als er helemaal geen netwerkverbinding is.
-            console.error('Service Worker: Fetch error, likely network offline.', event.request.url, error);
-            // Optioneel: Geef een standaard offline pagina terug als fallback
-            // Als je een 'offline.html' pagina zou maken en cachen:
+            console.error('Service Worker: Fetch error, likely offline:', event.request.url, error);
+            // Hier kun je een offline fallback pagina teruggeven indien gewenst en gecached
             // return caches.match('/Landingpage_voorbeeld/offline.html');
-
-            // Voor nu geven we de fout gewoon door, wat resulteert in de standaard browser foutmelding (bijv. "Geen internetverbinding").
-            // Dit is vaak duidelijk genoeg voor de gebruiker.
-            throw error; // Gooi de error opnieuw zodat de browser het merkt
+            throw error;
         });
       })
   );
 });
+
+// Eenvoudig commentaar om versie bij te houden en updates te forceren
+// Version: 3

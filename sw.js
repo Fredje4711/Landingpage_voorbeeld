@@ -1,18 +1,21 @@
 // sw.js
 
-// Naam van de cache - VERHOOG DIT VERSIENUMMER BIJ ELKE UPDATE VAN sw.js of index_.html!
-const CACHE_NAME = 'dlml-tools-cache-v3'; // <--- VERSIE VERHOOGD NAAR v3
+// Naam van de cache - VERHOOG DIT VERSIENUMMER BIJ ELKE UPDATE VAN sw.js of index.html!
+// Zorg ervoor dat dit uniek is en verhoogd wordt bij elke relevante wijziging aan de 'urlsToCache'
+// of aan de logica van de Service Worker zelf.
+const CACHE_NAME = 'dlml-tools-cache-v5'; // <--- VERHOOGD NAAR v5. VERHOOG DIT NUMMER BIJ ELKE UPDATE!
 
 // Bestanden die offline beschikbaar moeten zijn
 // Zorg ervoor dat deze paden exact overeenkomen met de bestanden op GitHub
 const urlsToCache = [
-  '/Landingpage_voorbeeld/',                 // De hoofdpagina zelf (index)
-  '/Landingpage_voorbeeld/index_.html',      // Hernoemd bestand expliciet (index_ was gebruikt in eerdere vraag) - PAS AAN INDIEN NODIG
+  '/Landingpage_voorbeeld/',                 // De hoofdpagina's root URL (bijv. https://yourusername.github.io/Landingpage_voorbeeld/)
+  '/Landingpage_voorbeeld/index.html',       // <--- BELANGRIJK: CORRECTE BESTANDSNAAM index.html
   '/Landingpage_voorbeeld/manifest.json',    // Het manifest bestand
   '/Landingpage_voorbeeld/icon-192x192.png', // Het 192x192 PWA icoon
   '/Landingpage_voorbeeld/icon-512x512.png', // Het 512x512 PWA icoon
   '/Landingpage_voorbeeld/favicon.ico',      // Het favicon bestand
-  // Voeg hier eventuele andere *essentiële* statische bestanden toe
+  // Voeg hier eventuele andere *essentiële* statische bestanden toe die je lokaal host
+  // bijv. 'style.css', 'script.js' als die er zouden zijn.
 ];
 
 // Installatie event: Cache de bestanden
@@ -22,12 +25,17 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Service Worker: Caching app shell');
+        // Gebruik addAll, maar vang fouten op voor het geval een bestand niet kan worden gecached
+        // addAll zal mislukken als een van de URLs niet bereikbaar is, wat de installatie van de SW voorkomt.
+        // Dit is meestal wenselijk voor de 'app shell'.
         return cache.addAll(urlsToCache);
       })
       .then(() => {
         console.log('Service Worker: Installatie compleet, bestanden zijn gecached in', CACHE_NAME);
-        // Forceer de nieuwe service worker om direct actief te worden
-        self.skipWaiting(); // <-- GEACTIVEERD
+        // Forceer de nieuwe service worker om direct actief te worden.
+        // Dit betekent dat de nieuwe SW de controle overneemt van de oude SW zodra deze geïnstalleerd is,
+        // zonder dat de gebruiker de pagina hoeft te sluiten en opnieuw te openen.
+        self.skipWaiting();
       })
       .catch((error) => {
         console.error('Service Worker: Caching failed for cache', CACHE_NAME, error);
@@ -55,73 +63,102 @@ self.addEventListener('activate', (event) => {
     // Zorg dat de SW de pagina's direct controleert na activatie
     .then(() => {
        console.log('Service Worker: Claiming clients now...');
-       return self.clients.claim() // <-- GEACTIVEERD
+       // self.clients.claim() zorgt ervoor dat de Service Worker controle krijgt over
+       // alle bestaande en nieuwe clients (tabbladen) binnen zijn scope.
+       return self.clients.claim();
     })
   );
   console.log('Service Worker: Activatie compleet voor cache', CACHE_NAME);
 });
 
-// Fetch event: Reageer op netwerkverzoeken (Cache first strategy voor gecachte items)
+// Fetch event: Reageer op netwerkverzoeken
 self.addEventListener('fetch', (event) => {
   // We reageren alleen op GET requests
   if (event.request.method !== 'GET') {
     return;
   }
 
-  // Strategie: Cache first for items in urlsToCache, Network first for others?
-  // Of simpelweg: probeer cache, dan netwerk.
+  const requestUrl = new URL(event.request.url);
 
-  // Alleen reageren op verzoeken binnen de scope van de PWA (jouw domein)
-  if (!event.request.url.startsWith(self.location.origin)) {
-     // Laat externe verzoeken (Bootstrap, Tidio, FontAwesome, iframes) direct naar het netwerk gaan
-     return;
+  // === STRATEGIE VOOR DE HOOFDPAGINA (index.html) ===
+  // Gebruik een 'Network-first, then cache' strategie voor je hoofdpagina.
+  // Dit zorgt ervoor dat je altijd de nieuwste versie van de HTML probeert te krijgen,
+  // maar wel een fallback hebt als je offline bent.
+  // Dit is cruciaal voor snelle updates van de HTML inhoud.
+  const mainPagePaths = [
+    '/Landingpage_voorbeeld/',
+    '/Landingpage_voorbeeld/index.html',
+    '/' // Voor het geval de root direct wordt opgevraagd (hoewel /Landingpage_voorbeeld/ de primaire is)
+  ];
+  if (mainPagePaths.includes(requestUrl.pathname)) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          // Als de netwerk respons geldig is, cache deze voor toekomstig gebruik
+          if (networkResponse && networkResponse.status === 200) {
+            // Kloon de response want streams kunnen maar één keer gelezen worden.
+            // Eén voor de browser, één voor de cache.
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, networkResponse.clone());
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          // Netwerk mislukt (bijv. offline), probeer dan uit de cache te halen
+          console.warn('Service Worker: Network failed for main page, falling back to cache.');
+          return caches.match(event.request);
+        })
+    );
+    return; // Belangrijk: stop hier met verdere verwerking van deze fetch
   }
 
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Gevonden in cache
-        if (response) {
-          // Optioneel: Achtergrond update check (Stale-While-Revalidate idee)
-          // fetch(event.request).then(networkResponse => {
-          //   if (networkResponse && networkResponse.ok) {
-          //     caches.open(CACHE_NAME).then(cache => cache.put(event.request, networkResponse));
-          //   }
-          // });
-          return response;
-        }
+  // === STRATEGIE VOOR ALLE ANDERE LOKALE BESTANDEN (urlsToCache) ===
+  // Voor overige statische assets die we expliciet in urlsToCache hebben gezet: Cache-first.
+  // Dit is efficiënt omdat de browser de cache eerst controleert.
+  // Zorg ervoor dat de request URL overeenkomt met een van de gecachte URLs
+  if (event.request.url.startsWith(self.location.origin) && urlsToCache.some(url => requestUrl.pathname.endsWith(url.replace('/Landingpage_voorbeeld/', '')))) {
+    event.respondWith(
+      caches.match(event.request)
+        .then((response) => {
+          // Als het in de cache zit, retourneer het direct
+          if (response) {
+            return response;
+          }
 
-        // Niet in cache -> Netwerk
-        // console.log('Service Worker: Not in cache, fetching from network:', event.request.url); // Kan veel logs geven
-        return fetch(event.request).then(
-          (networkResponse) => {
-            // Controleer of we een geldig antwoord hebben
-            if(!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          // Zo niet, probeer het van het netwerk te halen en cache het voor de volgende keer
+          return fetch(event.request).then(
+            (networkResponse) => {
+              if(!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+                return networkResponse;
+              }
+              const responseToCache = networkResponse.clone();
+              caches.open(CACHE_NAME)
+                .then((cache) => {
+                  cache.put(event.request, responseToCache);
+                });
               return networkResponse;
             }
-
-            // Kloon het antwoord om het te kunnen cachen en terug te geven
-            const responseToCache = networkResponse.clone();
-
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                 // Alleen cachen als het een van de vooraf gedefinieerde URLs is? Of alles?
-                 // Voor nu: cache het als het van het netwerk komt en OK is.
-                 // console.log('Service Worker: Caching new resource:', event.request.url); // Kan veel logs geven
-                 cache.put(event.request, responseToCache);
-              });
-
-            return networkResponse;
-          }
-        ).catch(error => {
-            console.error('Service Worker: Fetch error, likely offline:', event.request.url, error);
-            // Hier kun je een offline fallback pagina teruggeven indien gewenst en gecached
+          );
+        })
+        .catch(error => {
+            console.error('Service Worker: Fetch error for cached asset, likely offline:', event.request.url, error);
+            // Hier kun je een offline fallback pagina/afbeelding teruggeven indien gewenst
             // return caches.match('/Landingpage_voorbeeld/offline.html');
-            throw error;
-        });
-      })
-  );
+            // Optioneel: Voor assets (niet de hoofdpagina), als netwerk en cache falen, geef null terug.
+            return new Response(null, { status: 503, statusText: 'Service Unavailable' });
+        })
+    );
+    return; // Belangrijk: stop hier met verdere verwerking van deze fetch
+  }
+
+  // === STRATEGIE VOOR EXTERNE BRONNEN (CDN's, Iframes, etc.) ===
+  // Verzoeken voor externe bronnen (zoals Bootstrap, FontAwesome CDN's, Tidio,
+  // en de inhoud van je iframes op fredje4711.github.io)
+  // worden NIET door deze Service Worker gecached. Ze gaan direct naar het netwerk.
+  // Dit is de meest gangbare en veilige aanpak voor externe content.
+  event.respondWith(fetch(event.request));
 });
 
 // Eenvoudig commentaar om versie bij te houden en updates te forceren
-// Version: 3
+// Version: 5
